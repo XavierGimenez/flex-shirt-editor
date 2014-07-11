@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+ADOBE SYSTEMS INCORPORATED
+Copyright 2008 Adobe Systems Incorporated
+All Rights Reserved.
+
+NOTICE: Adobe permits you to use, modify, and distribute this file
+in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<!--- The default skin class for the Spark Button component.  
+
+@see spark.components.Button
+
+@langversion 3.0
+@playerversion Flash 10
+@playerversion AIR 1.5
+@productversion Flex 4
+-->
+<s:SparkSkin minWidth="21" 
+			 minHeight="21" 
+			 alpha.disabled="0.5"
+			 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:fb="http://ns.adobe.com/flashbuilder/2009">
+	
+	<fx:Metadata>
+		[HostComponent("com.bykoko.presentation.common.IconButton")]
+	</fx:Metadata>
+	
+	<!-- Estados -->
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over"/>
+		<s:State name="down"/>
+		<s:State name="disabled"/>
+	</s:states>
+	
+	<s:Group>
+		<!-- layout -->	
+		<s:layout>		
+			<s:HorizontalLayout paddingBottom="6"
+								paddingLeft="0"
+								paddingRight="6"
+								paddingTop="8"
+								gap="7"
+								verticalAlign="middle">
+			</s:HorizontalLayout>
+		</s:layout>
+		
+		<s:BitmapImage id="iconElement"/>
+		
+		<s:Label text="{hostComponent.label}"
+				 id="label"
+				 styleName="mainMenuButtonLabel"
+				 color.over="0xe75000"/>
+	</s:Group>
+	
+</s:SparkSkin>

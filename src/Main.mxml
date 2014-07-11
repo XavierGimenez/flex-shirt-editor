@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application minWidth="960" 
+			   width="960" 
+			   minHeight="560"
+			   height="560"
+			   direction="ltr"
+			   layoutDirection="ltr"
+			   xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:parsley="http://www.spicefactory.org/parsley" 
+			   xmlns:local="*"
+			   xmlns:presentation="com.bykoko.presentation.*" 
+			   xmlns:product="com.bykoko.presentation.product.*">
+
+	<fx:Metadata>
+		[ResourceBundle("Bundles")]
+		[ResourceBundle("FormatValues")]
+	</fx:Metadata>
+
+	<fx:Style source="/com/bykoko/style/skins/bykoko.css"/>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.configuration.ContextConfiguration;
+			import com.bykoko.domain.Constants;
+			import com.bykoko.presentation.header.HeaderView;
+			import com.bykoko.presentation.product.ProductConfigurationView;
+			import com.bykoko.vo.order.Order;
+			
+			import flashx.textLayout.elements.GlobalSettings;
+			
+			import mx.core.FlexGlobals;
+			import mx.events.StyleEvent;
+			
+			[MessageDispatcher]
+			public var dispatcher:Function;
+
+			
+			
+			[Init]
+			public function init():void
+			{
+				//load flash vars (includes the settings based on the user profile)
+				loadFlashVars();
+				
+				//set localization
+				setLocalization();
+				
+				//request data and external assets to setup the application
+				model.setup();
+			}
+			
+			
+			
+			/******************************************************************************
+			 * PRIVATE METHODS
+			 *****************************************************************************/
+			
+			
+			
+			//
+			private function loadFlashVars():void
+			{
+				var flashvars:Object = FlexGlobals.topLevelApplication.parameters;
+				
+				CONFIG::debug
+				{
+					trace("debug mode");
+					/*
+					flashvars.xml='http://bykoko.makkao.net/php/ajax/api.php?do=setup';
+					flashvars.tip=1;
+					flashvars.id=0;
+					flashvars.url='http://bykoko.makkao.net/cesta/';
+					flashvars.catalogo=0;
+					flashvars.mode=0;
+					*/
+					/*flashvars.xml='http://bykoko.com/php/ajax/api.php?do=setup&catalogo=9';
+					flashvars.tip=5;
+					flashvars.id=0;
+					flashvars.url='http://bykoko.com/usuario/mis-productos/';
+					flashvars.catalogo=9;
+					flashvars.order='';	
+					flashvars.mode=0*/
+				}
+				
+				//set the url to call the setup
+				Constants.url_config = flashvars.xml; //)?	flashvars.xml : Constants.URL_SERVICE + "?do=setup";
+
+				//set the url to the shoppping cart
+				Constants.url_redirect = (flashvars.url)? flashvars.url : "";
+				
+				//set the profile mode of the designer (it depends on the environment where
+				//the designer is invoked from)
+				model.appDomain.profile = (flashvars.tip)?	int(flashvars.tip) : Constants.PROFILE_ANONYMOUS;
+
+				//default design. Provided when the profile of the app is Constants.PROFILE_USER_WITH_DESIGN
+				model.appDomain.defaultDesignId = (flashvars.id)?	int(flashvars.id) : Constants.NO_ID;
+
+				//id of the catalogue. If no id is provided, use the makkao default
+				model.appDomain.catalogueId = (flashvars.catalogo)?	int(flashvars.catalogo) : Constants.CATALOGUE_ID_BYKOKO;
+				
+				//type of visual configuration of the designer. Based on the client's type
+				model.appDomain.UIConfig = (flashvars.mode && int(flashvars.mode) != Constants.CATALOGUE_ID_BYKOKO)?	Constants.UI_CONFIG_BIG_ACCOUNT : Constants.UI_CONFIG_DEFAULT;	
+
+				//get the order to update / modify
+				model.appDomain.orderFlashvars = (flashvars.order && flashvars.order != '')?	flashvars.order:null;
+			}
+			
+			
+			
+			//
+			private function setLocalization():void
+			{
+				if(FlexGlobals.topLevelApplication.parameters && FlexGlobals.topLevelApplication.parameters.localeChain)
+					resourceManager.localeChain = [FlexGlobals.topLevelApplication.parameters.localeChain];
+				else
+					resourceManager.localeChain = ["es_ES"];
+			}
+			
+			
+			
+			/******************************************************************************
+			 * EVENTS
+			 *****************************************************************************/
+			
+			
+			//
+			private function onSetupCompleted(e:Event):void
+			{
+				//add the views to the application
+				UI.addElement(new HeaderView());
+				UI.addElement(new ProductConfigurationView());
+				
+				//once the ProductConfigurationView will be initialized, the default
+				//data (based on the profile mode) will be loaded
+				var timer:Timer = new Timer(250, 1);
+				timer.addEventListener(TimerEvent.TIMER, function(e:TimerEvent):void
+				{
+					timer = null;
+					
+					//bug in the TextLayoutFramework:
+					//http://forums.adobe.com/message/2672002#2672002
+					//http://forums.adobe.com/thread/750205#3310579
+					//http://www.marcelpanse.nl/2010/03/embedded-fonts-in-tlf-and-swfcontexts.html
+					//workaround suggested in the url last above:
+					GlobalSettings.resolveFontLookupFunction = null;
+					
+					model.loadBootstrapData();
+				});
+				timer.start();
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<parsley:ContextBuilder>
+			<parsley:FlexConfig type="{ContextConfiguration}"/>
+		</parsley:ContextBuilder>
+		<local:MainPM id="model"
+					  setupCompleted="onSetupCompleted(event)"/>
+		<parsley:Configure targets="{model}"/>
+		<parsley:Configure/>
+	</fx:Declarations>
+	
+	<!-- main holder of the application -->
+	<s:VGroup id = "UI"
+			  paddingTop="0"
+			  paddingLeft="0"
+			  paddingBottom="10"
+			  paddingRight="0"
+			  gap="22"/>	
+</s:Application>

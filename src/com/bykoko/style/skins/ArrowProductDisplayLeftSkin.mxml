@@ -1,0 +1,26 @@
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:fb="http://ns.adobe.com/flashbuilder/2009" 
+			 minWidth="21" 
+			 minHeight="21" 
+			 alpha.disabled="0.2">
+	
+    <fx:Metadata>[HostComponent("com.bykoko.presentation.common.IconButton")]</fx:Metadata>
+    
+    <!-- host component -->
+    <!-- states -->
+    <s:states>
+        <s:State name="up" />
+        <s:State name="over" />
+        <s:State name="down" />
+        <s:State name="disabled" />
+		<fx:Script>
+			<![CDATA[
+				import assets.AssetsManager;
+			]]>
+		</fx:Script>
+    </s:states>
+    
+	<s:BitmapImage source="{AssetsManager.arrowRotateProductLeft}" includeIn="disabled, up"/>
+	<s:BitmapImage source="{AssetsManager.arrowRotateProductLeftOver}" includeIn="over, down"/>
+</s:SparkSkin>

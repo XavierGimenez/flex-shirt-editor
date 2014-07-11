@@ -1,0 +1,51 @@
+#main menu
+MAIN_MENU.CHOOSE_PRODUCT=Escoge producto
+MAIN_MENU.CHOOSE_DESIGN=Elige diseño
+MAIN_MENU.LOAD_PHOTO=en_USCarga una foto
+MAIN_MENU.ADD_TEXT=en_USAñade texto
+MAIN_MENU.NEW_DESIGN=en_USNuevo diseño
+
+
+#products panel
+PRODUCT_PANEL.TITLE=en_USEscoge producto
+PRODUCT_PANEL.CATEGORIES=en_USCategorias
+PRODUCT_PANEL.CATALOG=en_USCatálogo
+
+#product options
+PRODUCT_OPTIONS.DISPLAYS_BROWSER.TITLE=en_USVista
+PRODUCT_OPTIONS.AMOUNT=en_USCantidad
+
+#designs panel
+DESIGN_PANEL.TITLE=en_USEscoge un diseño
+DESIGN_PANEL.CATEGORIES=en_USCategorias
+
+#photo panel
+PHOTO_PANEL.TITLE=en_USCargar foto
+PHOTO_PANEL.LOAD_BUTTON=en_USCargar foto
+PHOTO_PANEL.INSTRUCTIONS=en_USPuede subir fotos en formato png o jpg. Mínimo de 50x50 píxels, máximo de 4000x4000 píxels. Peso máximo de 10Mb.
+PHOTO_PANEL.LOADING_IMAGE_MESSAGE=en_USCargando imagen...
+PHOTO_PANEL.FILE_FILTER=en_USImagenes
+PHOTO_PANEL.WARNING.FILE_WEIGHT_WRONG=en_USEl tamaño del archivo es superior a 10Mb...
+PHOTO_PANEL.WARNING.FILE_SIZE_WRONG=en_USEl tamaño de la imagen no es correcto. Por favor, cargar una fotos con las medidas correctas.
+PHOTO_PANEL.WARNING.IO_ERROR=en_USNo ha sido posible cargar la imagen. Compruebe su conexión de red e inténtelo de nuevo
+PHOTO_PANEL.WARNING.SECURITY_ERROR=en_USHa ocurrido un error de seguridad. No es posible cargar la imagen.
+
+#text panel
+TEXT_PANEL.TITLE=en_USAñade texto
+TEXT_PANEL.FONTS=en_USTipografias
+TEXT_PANEL.FONT_SIZE=en_USTamaño
+TEXT_PANEL.FONT_STYLE=en_USEstilo
+TEXT_PANEL.FONT_COLOR=en_USColor
+TEXT_PANEL.FONT_ALIGNMENT=en_USAlienar
+TEXT_PANEL.ADD_TEXT=en_USAñadir texto
+TEXT_EDITABLE.DEFAULT_TEXT=en_USEscribe tu texto
+
+#add to cart button
+BUTTON.ADD_TO_CART=en_USAñadir a la cesta
+
+
+#alerts
+ALERT.TITLE.WARNING=en_USAtención
+ALERT.CHOOSE_NEW_PRODUCT=en_USEscogiendo un nuevo producto perderàs el diseño actual. Quieres continuar?
+ALERT.START_NEW_DESIGN=en_USEstás seguro que quieres empezar un nuevo diseño?
+ALERT.DESIGN_NOT_VALID=en_USHas colocado elementos fuera del área válida de diseño. Por favor, corrige tu diseño para poder realizar la compra.

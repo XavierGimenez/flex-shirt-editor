@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fx:Object xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   xmlns:parsley="http://www.spicefactory.org/parsley" 
+		   xmlns:domain="com.bykoko.domain.*" 
+		   xmlns:task="com.bykoko.infrastructure.task.*">
+
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.infrastructure.command.GetCategoriesCommand;
+			import com.bykoko.infrastructure.command.GetConfigCommand;
+			import com.bykoko.infrastructure.command.GetDesignByIdCommand;
+			import com.bykoko.infrastructure.command.GetDesignCategoriesCommand;
+			import com.bykoko.infrastructure.command.GetDesignsByCategoryCommand;
+			import com.bykoko.infrastructure.command.GetProductByIdCommand;
+			import com.bykoko.infrastructure.command.GetProductsByCategoryCommand;
+			import com.bykoko.infrastructure.command.GetProductsBySubcategoryCommand;
+			import com.bykoko.infrastructure.command.GetSubCategoriesCommand;
+			import com.bykoko.infrastructure.command.GetTeamCategoriesCommand;
+			import com.bykoko.infrastructure.command.GetTeamProductsByCategoryCommand;
+			import com.bykoko.infrastructure.command.GetTeamProductsBySubcategoryCommand;
+			import com.bykoko.infrastructure.command.GetTeamSubCategoriesCommand;
+			import com.bykoko.infrastructure.command.SendOrderCommand;
+			import com.bykoko.infrastructure.message.ServiceMessage;
+			import com.bykoko.infrastructure.service.ApiHttpService;
+			import com.bykoko.infrastructure.service.LocalApiHttpService;
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		
+		<!-- Service that Parsley uses -->
+		<parsley:DynamicObject type="{ApiHttpService}"/>
+		
+		<!-- This is the declaration for the Dynamic Command. DynamicCommands are created automatically
+			when a message of the type of the parameter received by the execute method is dispatched.
+			type is the name of the class that you wish to have invoked.  Selector is the specific
+			identifier so that you can have more than one message of the same message class dispatched
+			and the selector let's you select wich dynamic command is associated with it.
+		-->
+		<parsley:DynamicCommand type="{GetConfigCommand}" selector="{ServiceMessage.GET_CONFIG}" />
+		<parsley:DynamicCommand type="{GetCategoriesCommand}" selector="{ServiceMessage.GET_CATEGORIES}" />
+		<parsley:DynamicCommand type="{GetSubCategoriesCommand}" selector="{ServiceMessage.GET_SUBCATEGORIES}" />
+		<parsley:DynamicCommand type="{GetProductsByCategoryCommand}" selector="{ServiceMessage.GET_PRODUCTS_BY_CATEGORY}" />
+		<parsley:DynamicCommand type="{GetProductsBySubcategoryCommand}" selector="{ServiceMessage.GET_PRODUCTS_BY_SUBCATEGORY}" />
+		<parsley:DynamicCommand type="{GetProductByIdCommand}" selector="{ServiceMessage.GET_PRODUCT_BY_ID}" />
+		<parsley:DynamicCommand type="{GetDesignCategoriesCommand}" selector="{ServiceMessage.GET_DESIGN_CATEGORIES}" />
+		<parsley:DynamicCommand type="{GetDesignByIdCommand}" selector="{ServiceMessage.GET_DESIGNS}" />
+		<parsley:DynamicCommand type="{GetDesignsByCategoryCommand}" selector="{ServiceMessage.GET_DESIGNS_BY_CATEGORY}" />
+		<parsley:DynamicCommand type="{SendOrderCommand}" selector="{ServiceMessage.SEND_ORDER}"/>
+		<parsley:DynamicCommand type="{GetTeamCategoriesCommand}" selector="{ServiceMessage.GET_TEAM_CATEGORIES}" />
+		<parsley:DynamicCommand type="{GetTeamSubCategoriesCommand}" selector="{ServiceMessage.GET_TEAM_SUBCATEGORIES}" />
+		<parsley:DynamicCommand type="{GetTeamProductsByCategoryCommand}" selector="{ServiceMessage.GET_TEAM_PRODUCTS_BY_CATEGORY}" />
+		<parsley:DynamicCommand type="{GetTeamProductsBySubcategoryCommand}" selector="{ServiceMessage.GET_TEAM_PRODUCTS_BY_SUBCATEGORY}" />
+
+		<!-- model and domains of the application -->
+		<domain:Domain/>
+		<domain:AppDomain/>
+		<domain:ViewDomain/>
+	</fx:Declarations>
+
+</fx:Object>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<s:SparkSkin minWidth="21" 
+			 minHeight="21" 
+			 alpha.disabled="0.5"
+			 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:fb="http://ns.adobe.com/flashbuilder/2009">
+    
+	<fx:Metadata>
+		/*[HostComponent("spark.components.ToggleButton")]*/
+		[HostComponent("spark.components.ButtonBarButton")]
+	</fx:Metadata>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import spark.components.ButtonBar;
+			import spark.components.ButtonBarButton;
+			
+			//
+			protected function gr_creationComplete(evt:FlexEvent):void 
+			{
+				var dataObj:Object = hostComponent.data;
+				img.source = dataObj.icon;
+				hostComponent.toolTip = dataObj.label;
+			}
+			
+			
+			//
+			protected function gr_selected_creationComplete(evt:FlexEvent):void 
+			{
+				var dataObj:Object = hostComponent.data;
+				img_selected.source = dataObj.iconSelected;
+				hostComponent.toolTip = dataObj.label;
+			}
+			
+			
+			//
+			protected function label_creationComplete(evt:FlexEvent):void
+			{
+				var dataObj:Object = hostComponent.data;
+				label.text = dataObj.label;
+			}
+			
+			
+			/* Define the skin elements that should not be colorized. 
+			For toggle button, the graphics are colorized but the label is not. */
+			static private const exclusions:Array = [];
+			
+			override public function get colorizeExclusions():Array 
+			{
+				return exclusions;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<!-- Estados -->
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over" stateGroups="overStates"/>
+		<s:State name="down" stateGroups="downStates"/>
+		<s:State name="disabled" stateGroups="disabledStates"/>
+		<s:State name="upAndSelected" stateGroups="selectedStates" />
+		<s:State name="overAndSelected" stateGroups="selectedStates" />
+		<s:State name="downAndSelected" stateGroups="selectedStates" />
+		<s:State name="disabledAndSelected" stateGroups="selectedUpStates, disabledStates, selectedStates" />
+	</s:states>
+		
+	<!-- Gráficos -->
+	<s:Rect id="background" 
+			width="158" 
+			minHeight="40" 
+			radiusX="3" 
+			radiusY="3">
+		<s:stroke>
+			<s:SolidColorStroke alpha="0" 
+								color="0xe0dbdb"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="0xffffff"/>
+		</s:fill>
+		<s:filters>
+			<s:DropShadowFilter blurX="1"
+								blurY="1"
+								distance="1"
+								quality="2"
+								color="0x999999"
+								alpha="0.4"/>
+		</s:filters>
+	</s:Rect>
+	
+	<s:Group height="100%"
+			 width="100%">			 
+		<!-- layout -->	
+		<s:layout>		
+			<s:HorizontalLayout paddingBottom="8"
+								paddingLeft="6"
+								paddingRight="6"
+								paddingTop="6"
+								gap="10"
+								verticalAlign="middle">
+			</s:HorizontalLayout>
+		</s:layout>
+
+		<!--s:BitmapImage id="icon"/-->
+		<s:Graphic id="gr"
+				   includeIn="up, downStates"
+				   creationComplete="gr_creationComplete(event);"
+				   horizontalCenter = "0"
+				   verticalCenter = "0">
+			<s:BitmapImage id="img"
+						   width="27"
+						   height="27"/>
+		</s:Graphic>
+		
+		<s:Graphic id="gr_selected"
+				   includeIn="overStates, selectedStates"
+				   creationComplete="gr_selected_creationComplete(event);"
+				   horizontalCenter = "0"
+				   verticalCenter = "0">
+			<s:BitmapImage id="img_selected"
+						   width="27"
+						   height="27"/>
+		</s:Graphic>
+		
+		<s:Label creationComplete="label_creationComplete(event);"
+				 id="label"
+				 styleName="mainMenuButtonLabel"
+				 color.over="0xe75000"
+				 color.selectedStates="0xf75602"/>
+	</s:Group>
+	
+	<!-- transiciones -->
+	<!--s:transitions>
+		<s:Transition>
+			<s:CrossFade target="{label}" duration="100"/>
+		</s:Transition>
+	</s:transitions-->
+</s:SparkSkin>

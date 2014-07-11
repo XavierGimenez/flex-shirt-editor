@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup width="100%"
+		  xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:parsley="http://www.spicefactory.org/parsley" 
+		  xmlns:browser="com.bykoko.presentation.product.browser.*">
+	
+	<fx:Declarations>
+		<browser:ProductsBrowserPM id="model"
+								   requestingData="onRequestingData(event)"
+								   dataRequested="onDataRequested(event)"
+								   selectedCategoryChanged="onSelectedCategoryChanged(event)"/>
+		<parsley:Configure targets="{model}"/>
+		<parsley:Configure/>
+	</fx:Declarations>
+
+	<fx:Metadata>
+		[Event(name="productsListAvailable", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.presentation.common.CircleSlicePreloader;
+			import com.bykoko.util.SpriteUtil;
+			import com.bykoko.vo.xmlmapping.product.Categoria;
+			import com.bykoko.vo.xmlmapping.product.Subcategoria;
+			
+
+			
+			/**************************************************************************************
+			 * GETTER / SETTER
+			 *************************************************************************************/
+			
+			
+			
+			public function set selectedCategory(category:Categoria):void
+			{
+				categoriesList.selectedItem = category;
+				model.changeSelectedCategory(category);
+			}
+			
+			
+			
+			public function set selectedCategoryIndex(index:int):void
+			{
+				categoriesList.selectedIndex = 0;
+				model.changeSelectedCategory(categoriesList.selectedItem as Categoria);
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * EVENTS
+			 *************************************************************************************/
+			
+			
+			
+			//
+			private function onRequestingData(event:Event):void
+			{
+				SpriteUtil.removeChildren(preloaderHolder);
+				preloaderHolder.addChild(new CircleSlicePreloader()) as CircleSlicePreloader;
+				productsDataGroup.visible = false;
+			}
+			
+			
+			
+			//
+			private function onDataRequested(event:Event):void
+			{
+				SpriteUtil.removeChildren(preloaderHolder);
+				productsDataGroup.visible = true;
+				
+				//check if this view is trying to select the product of the bootstrap process
+				if(model.appDomain.bootstrapTaskGroup)
+				{
+					model.handleSelectProductEvent( new ProductItemRendererEvent(ProductItemRendererEvent.SELECT, model.appDomain.getProductById(model.appDomain.config.articulo.id)));
+				}
+
+				//notify that the view is showing the data (list of products)
+				dispatchEvent(new Event("productsListAvailable"));
+			}
+			
+			
+			
+			//This event is launched ONLY when the selected category has subcategories, otherwise
+			//the model requests the products for the selected category
+			private function onSelectedCategoryChanged(event:Event):void
+			{
+				subcategoriesList.selectedIndex = -1;
+				
+				//check if this view is trying to select the product of the bootstrap process
+				//If so, select the subcategory which belongs to.
+				if(model.appDomain.bootstrapTaskGroup)
+				{
+					subcategoriesList.selectedItem = model.appDomain.getSubcategoryById(model.appDomain.selectedCategory, model.appDomain.config.articulo.scat);
+				}
+				else
+				{
+					//if no default product, autoselect first subcategory by default
+					subcategoriesList.selectedIndex = 0;
+				}
+				
+				model.changeSelectedSubcategory(subcategoriesList.selectedItem as Subcategoria);
+			}
+		]]>
+	</fx:Script>
+	
+	<!-- list of category products --> 
+	<s:HGroup width="100%"
+			  horizontalAlign="left"
+			  verticalAlign="middle">
+		<s:Label text="{resourceManager.getString('Bundles', 'PRODUCT_PANEL.CATEGORIES')}"
+				 styleName="lucida11"
+				 width="40%"/>
+		<s:ComboBox id="categoriesList"
+					width="60%"
+					styleName="lucida10Dark"
+					labelField="name"
+					dataProvider="{model.appDomain.categories}"
+					change="{model.changeSelectedCategory( categoriesList.selectedItem as Categoria)}"/>
+	</s:HGroup>
+	
+	<!-- list of subcategory products -->
+	<s:HGroup width="100%"
+			  horizontalAlign="left"
+			  verticalAlign="middle"
+			  visible="{(model.appDomain.selectedCategory.subcategories.length > 0)}">
+		<s:Label text="{resourceManager.getString('Bundles', 'PRODUCT_PANEL.CATALOG')}"
+				 styleName="lucida11"
+				 width="40%"/>
+		<s:ComboBox id="subcategoriesList"
+					width="60%"
+					styleName="lucida10Dark"					
+					labelField="name"
+					dataProvider="{model.appDomain.selectedCategory.subcategories}"
+					change="{model.changeSelectedSubcategory(subcategoriesList.selectedItem as Subcategoria)}"/>
+	</s:HGroup>
+	
+	
+	<!-- list of products based on the selected category/subcategory -->
+	<s:Group id="productsList"
+			 width="100%" 
+			 height="250">
+		<s:Scroller width="100%"
+					height="100%"
+					verticalScrollPolicy="auto"
+					horizontalScrollPolicy="off">
+			<s:DataGroup id="productsDataGroup"
+						 dataProvider="{model.appDomain.products}"
+						 itemRenderer="com.bykoko.presentation.product.browser.ProductItemRenderer">
+				<s:layout>
+					<s:TileLayout horizontalGap="3"
+								  verticalGap="3"
+								  columnWidth="75"
+								  orientation="rows"
+								  requestedColumnCount="3"/>
+				</s:layout>
+			</s:DataGroup>			
+		</s:Scroller>
+		<s:SpriteVisualElement id="preloaderHolder"
+							   x="{productsList.width/2 - 8}"
+							   y="{productsList.height/2 - 8}"/>
+	</s:Group>
+</s:VGroup>

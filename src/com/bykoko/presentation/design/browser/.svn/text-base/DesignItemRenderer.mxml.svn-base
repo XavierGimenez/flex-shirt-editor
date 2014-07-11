@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer width="100%"
+				height="100%"
+				xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				xmlns:parsley="http://www.spicefactory.org/parsley"
+				clipAndEnableScrolling="false">
+
+	<!-- Parsley will manage the events Event.SELECT and Event.OPEN 
+		Event 'select' it will be catched in the DesignsBrowser
+		Event 'open' and 'close' will be catched un the DesignsBrowser view -->
+	<fx:Metadata>
+		[Event(name="select", type="flash.events.Event")]
+		[Event(name="open", type="flash.events.Event")]
+		[Event(name="close", type="flash.events.Event")]
+		[ManagedEvents("select")]
+		[ManagedEvents("open")]
+		[ManagedEvents("close")]
+	</fx:Metadata>
+	
+	<fx:Declarations>
+		<parsley:Configure/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.vo.xmlmapping.design.Diseno;
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="hovered"/>
+		<s:State name="selected"/>
+	</s:states>
+	
+	<s:BorderContainer borderAlpha.normal="0"
+					   borderAlpha.hovered="1"
+					   borderAlpha.selected="0"
+					   borderColor="0xFF6600"
+					   borderStyle="inset"
+					   borderWeight="3"
+					   width="81"
+					   height="81"
+					   backgroundColor="0xffffff">
+		
+		<s:Group left="0"
+				 right="0"
+				 top="0"
+				 bottom="0"
+				 useHandCursor="true"
+				 buttonMode="true"
+				 click="dispatchEvent(new Event(Event.SELECT))">
+				
+			<s:Rect left="0"
+					right="0"
+					top="0"
+					bottom="0">
+				<s:fill>
+					<s:LinearGradient rotation="90">
+						<s:GradientEntry color="0xDFDCD9"/>
+						<s:GradientEntry color="0xffffff"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			
+			<!-- swf version of the design -->
+			<mx:SWFLoader id="design"
+						  source="{(data as Diseno).swf}"
+						  autoLoad="true"
+						  maintainAspectRatio="true"
+						  width="75"
+						  height="75"
+						  smoothBitmapContent="true"
+						  verticalAlign="middle"
+						  horizontalAlign="center"/>
+		</s:Group>
+		<!-- button 'more info' -->
+		<s:Group right="0"
+				 bottom="0"
+				 width="12"
+				 height="12"
+				 buttonMode="true"
+				 useHandCursor="true"
+				 click="dispatchEvent(new Event(Event.OPEN))"
+				 rollOut="dispatchEvent(new Event(Event.CLOSE))">
+			<s:Rect visible.normal="false"
+					visible.hovered="true"
+					visible.selected="false"
+					width="100%"
+					height="100%">
+				<s:fill>
+					<s:SolidColor color="0xff6600"/>		
+				</s:fill>
+			</s:Rect>
+			<s:Line xFrom="3"
+					xTo="10"
+					y="6">
+				<s:stroke>
+					<s:SolidColorStroke color="0xffffff"/>
+				</s:stroke>
+			</s:Line>
+			<s:Line yFrom="3"
+					yTo="10"
+					x="6">
+				<s:stroke>
+					<s:SolidColorStroke color="0xffffff"/>
+				</s:stroke>
+			</s:Line>
+		</s:Group>
+	</s:BorderContainer>
+</s:ItemRenderer>

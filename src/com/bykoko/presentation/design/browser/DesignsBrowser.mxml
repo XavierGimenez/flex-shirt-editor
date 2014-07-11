@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:CommonPanel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx"
+					xmlns:common="com.bykoko.presentation.common.*"
+					xmlns:browser="com.bykoko.presentation.design.browser.*" 
+					xmlns:parsley="http://www.spicefactory.org/parsley">
+	
+	<fx:Declarations>
+		<browser:DesignsBrowserPM id="model"/>
+		<parsley:Configure targets="{model}"/>
+		<s:Parallel id="showPanelEffect" 
+					duration="175">
+			<s:Fade alphaFrom="0"
+					alphaTo="1"/>
+			<s:Scale scaleXFrom="0.5"
+					 scaleXTo="1"/>
+		</s:Parallel>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+			
+			import com.bykoko.presentation.common.CircleSlicePreloader;
+			import com.bykoko.presentation.product.designer.EditableDesign;
+			import com.bykoko.util.SpriteUtil;
+			import com.bykoko.vo.xmlmapping.design.Categoria;
+			import com.bykoko.vo.xmlmapping.design.Diseno;
+			
+			
+			private var designInfoPanel:DesignInfoPanel;
+			
+			
+			
+			/**************************************************************************************
+			 * PUBLIC METHODS
+			 *************************************************************************************/
+			
+			
+			
+			override public function initializePanel():void
+			{
+				if(!isInitialized)
+				{
+					super.initializePanel();
+					
+					//autoselect the first category by default. Set it also into the model
+					categoriesList.selectedIndex = 0;
+					model.changeSelectedCategory(categoriesList.selectedItem as Categoria);
+				}
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * PRIVATE METHODS
+			 *************************************************************************************/
+			
+			
+			
+			private function removeDesignInfoPanel():void
+			{
+				if(designInfoPanel && designsList.contains(designInfoPanel))
+				{
+					designsList.removeElement(designInfoPanel);
+					designInfoPanel == null;
+				}
+			}
+			
+			
+			
+			private function resetDesignColor():void
+			{
+				model.resetDesignColor();
+				resetColorButton.enabled = false;
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * MESSAGES
+			 *************************************************************************************/
+			
+			
+			
+			//
+			[MessageHandler]
+			public function handleSelectDesignEvent(event:Event):void
+			{
+				switch(event.type)
+				{
+					case Event.OPEN:
+						removeDesignInfoPanel();
+						var designItemRenderer:DesignItemRenderer = event.target as DesignItemRenderer;
+						designInfoPanel = new DesignInfoPanel();
+						designInfoPanel.design = designItemRenderer.data as Diseno;
+						designInfoPanel.move(designItemRenderer.x + designItemRenderer.width, designItemRenderer.y - 33);
+						designInfoPanel.addEventListener(Event.ADDED_TO_STAGE, function():void
+						{
+							showPanelEffect.play([designInfoPanel]);
+						});
+						designsList.addElement(designInfoPanel);
+						break;
+					
+					case Event.CLOSE:
+						removeDesignInfoPanel();
+						break;
+					
+					case Event.SELECT:
+						model.selectDesign((event.target as DesignItemRenderer).data as Diseno/*, colorPicker.selectedColor*/);
+						break;
+				}
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * EVENTS
+			 *************************************************************************************/
+			
+			
+			
+			//
+			private function onRequestingData(event:Event):void
+			{
+				SpriteUtil.removeChildren(preloaderHolder);
+				preloaderHolder.addChild(new CircleSlicePreloader()) as CircleSlicePreloader;
+				designsDataGroup.visible = false;
+			}
+			
+			
+			
+			//
+			private function onDataRequested(event:Event):void
+			{
+				SpriteUtil.removeChildren(preloaderHolder);
+				designsDataGroup.visible = true;
+			}
+		]]>
+	</fx:Script>
+	
+	<!-- header panel -->
+	<common:CommonPanelHeader image="{AssetsManager.chooseDesignPanel}"
+							  title="{resourceManager.getString('Bundles', 'DESIGN_PANEL.TITLE')}"/>
+	
+	<common:DottedLine/>
+	
+	<!-- list of category products --> 
+	<s:HGroup width="100%"
+			  horizontalAlign="left"
+			  verticalAlign="middle">
+		<s:Label text="{resourceManager.getString('Bundles', 'DESIGN_PANEL.CATEGORIES')}"
+				 styleName="lucida11"
+				 width="40%"/>
+		<s:ComboBox id="categoriesList"
+					width="60%"
+					styleName="lucida10Dark"
+					labelField="name"
+					dataProvider="{model.appDomain.designsCategories}"
+					change="{model.changeSelectedCategory( categoriesList.selectedItem as Categoria)}"/>
+	</s:HGroup>
+	
+	<s:HGroup top="0"
+			  left="0"
+			  width="100%"
+			  verticalAlign="middle">
+		<s:Label text="{resourceManager.getString('Bundles', 'DESIGN_PANEL.DESIGN_INFO.COLOR')}"
+				 styleName="lucida11"/>
+		<s:Group width="100%">
+			<mx:ColorPicker id="colorPicker"
+							left="0"
+							change="{model.setDesignColor(event)}"/>
+			<s:Button id="resetColorButton"
+					  right="0"					  
+					  label="{resourceManager.getString('Bundles','DESIGN_PANEL.DESIGN_INFO.RESTORE_DEFAULT_COLORS')}"
+					  skinClass="com.bykoko.style.skins.CommonButtonSkin"
+					  enabled="{model.appDomain.editableItem is EditableDesign &amp;&amp; (model.appDomain.editableItem as EditableDesign).color > -1}"
+					  click="{resetDesignColor()}"/>			
+		</s:Group>
+	</s:HGroup>
+	
+	<!-- list of products based on the selected category/subcategory -->
+	<s:Group id="designsList"
+			 width="100%" 
+			 height="250">
+		<s:Scroller width="100%"
+					height="100%"
+					verticalScrollPolicy="auto"
+					horizontalScrollPolicy="off">
+			<s:DataGroup id="designsDataGroup"
+						 width="100%"
+						 dataProvider="{model.appDomain.designs}"
+						 itemRenderer="com.bykoko.presentation.design.browser.DesignItemRenderer">
+				<s:layout>
+					<s:TileLayout horizontalGap="1"
+								  verticalGap="3"
+								  columnWidth="81"
+								  orientation="rows"
+								  requestedColumnCount="3"/>
+				</s:layout>
+			</s:DataGroup>			
+		</s:Scroller>
+		<s:SpriteVisualElement id="preloaderHolder"
+							   x="{designsList.width/2 - 8}"
+							   y="{designsList.height/2 - 8}"/>
+	</s:Group>
+	
+</common:CommonPanel>

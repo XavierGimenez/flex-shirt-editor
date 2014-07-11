@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin minWidth="21" 
+			 minHeight="21" 
+			 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:fb="http://ns.adobe.com/flashbuilder/2009" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx">
+    
+	<fx:Metadata>
+		[HostComponent("spark.components.ButtonBarButton")]
+	</fx:Metadata>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.vo.ProductDisplayInfo;
+			
+			import mx.events.FlexEvent;
+			
+			import spark.components.ButtonBarButton;
+			import flash.filters.GlowFilter;
+
+						
+			/* Define the skin elements that should not be colorized. 
+			For toggle button, the graphics are colorized but the label is not. */
+			static private const exclusions:Array = [];
+			
+			override public function get colorizeExclusions():Array 
+			{
+				return exclusions;
+			}
+			
+
+			protected function graphicCreationCompleteHandler(event:FlexEvent):void
+			{
+				imageProductDisplay.source = (hostComponent.data as ProductDisplayInfo).imageURL;				
+			}
+
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over" stateGroups="overStates"/>
+		<s:State name="down" stateGroups="downStates"/>
+		<s:State name="disabled" stateGroups="disabledStates"/>
+		<s:State name="upAndSelected" stateGroups="selectedStates" />
+		<s:State name="overAndSelected" stateGroups="selectedStates" />
+		<s:State name="downAndSelected" stateGroups="selectedStates" />
+		<s:State name="disabledAndSelected" stateGroups="selectedUpStates, disabledStates, selectedStates" />
+	</s:states>
+	
+	<s:Rect radiusX="10"
+			radiusY="10"
+			width="48"
+			height="48"
+			alpha.up="1"
+			alpha.over="0.5"
+			alpha.down="0.5"
+			filters.selectedStates="{[ new GlowFilter(0x333333, 0.15, 6, 6)]}"
+			filters.up="{[]}">		
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry color ="0xEDEEEE"/>
+				<s:GradientEntry color ="0xE8E9E9"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	
+	
+	<s:Graphic id="imageHolder"
+			   creationComplete="graphicCreationCompleteHandler(event)">
+		<mx:Image id="imageProductDisplay"
+				  x="4"
+				  y="4"
+				  autoLoad="true"
+				  width="42"
+				  height="42"
+				  buttonMode="true"
+				  useHandCursor="true"
+				  toolTip="{(hostComponent.data as ProductDisplayInfo).position.name}"/>
+	</s:Graphic>
+</s:SparkSkin>

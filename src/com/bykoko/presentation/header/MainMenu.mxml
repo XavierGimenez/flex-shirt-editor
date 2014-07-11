@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ButtonBar change="changeHandler(event)"
+			 minWidth="830"
+			 width="100%"
+			 skinClass="com.bykoko.style.skins.ButtonBarMainMenuSkin"
+			 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx"
+			 xmlns:parsley="http://www.spicefactory.org/parsley" 
+			 xmlns:presentation="com.bykoko.presentation.*" 
+			 xmlns:header="com.bykoko.presentation.header.*">
+	
+	<fx:Declarations>
+		<header:MainMenuPM id="model"/>
+		<parsley:Configure targets="{model}"/>
+		<parsley:Configure/>
+		
+		<s:ArrayCollection id="menuDataProvider">
+			<s:source>
+				<fx:Object id="product" 
+						   index="0"
+						   label="{resourceManager.getString('Bundles', 'MAIN_MENU.CHOOSE_PRODUCT')}" 
+						   icon="{AssetsManager.chooseProductMain}"
+						   iconSelected="{AssetsManager.chooseProductMainSelected}"/>
+				<fx:Object id="diseño"
+						   index="1"
+						   label="{resourceManager.getString('Bundles', 'MAIN_MENU.CHOOSE_DESIGN')}" 
+						   icon="{AssetsManager.chooseDesignMain}"
+						   iconSelected="{AssetsManager.chooseDesignMainSelected}"/>
+				<fx:Object id="cargaFoto"
+						   index="2"
+						   label="{resourceManager.getString('Bundles', 'MAIN_MENU.LOAD_PHOTO')}" 
+						   icon="{AssetsManager.loadPhotoMain}"
+						   iconSelected="{AssetsManager.loadPhotoMainSelected}"/>
+				<fx:Object id="texto"
+						   index="3"
+						   label="{resourceManager.getString('Bundles', 'MAIN_MENU.ADD_TEXT')}" 
+						   icon="{AssetsManager.addTextMain}"
+						   iconSelected="{AssetsManager.addTextMainSelected}"/>
+				<fx:Object id="equipos"
+						   index="4"
+						   label="{resourceManager.getString('Bundles', 'MAIN_MENU.TEAMS')}"
+						   icon="{AssetsManager.teamsMain}"
+						   iconSelected="{AssetsManager.teamsMainSelected}"/>
+			</s:source>
+		</s:ArrayCollection>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+			
+			import com.bykoko.domain.AppDomain;
+			import com.bykoko.domain.Constants;
+			import com.bykoko.domain.ViewDomain;
+			import com.bykoko.infrastructure.message.ProductMessage;
+			
+			import spark.events.IndexChangeEvent;
+
+			[Inject]
+			[Bindable]
+			public var viewDomain:ViewDomain;
+			
+			
+			
+			/**************************************************************************************
+			 * PUBLIC METHODS
+			 *************************************************************************************/
+
+			
+			//
+			[Init]
+			public function init():void
+			{
+				//menu options will change based on the modules indicated in the setup
+				var configDataProvider:ArrayCollection = new ArrayCollection();
+				
+				//config settings:
+				
+				//products module does not appear when an order is being recreated. The order's product
+				//can not be changed
+				if(model.appDomain.orderFlashvars == null)
+				{
+					configDataProvider.addItem(menuDataProvider.getItemAt(0));
+				}
+
+				//the rest of modules are set from the config
+				if(model.appDomain.config.modulo_disenos == Constants.SHOW)
+				{
+					configDataProvider.addItem(menuDataProvider.getItemAt(1));	
+				}
+				if(model.appDomain.config.modulo_imagenes == Constants.SHOW)
+				{
+					configDataProvider.addItem(menuDataProvider.getItemAt(2));	
+				}
+				if(model.appDomain.config.modulo_textos == Constants.SHOW)
+				{
+					configDataProvider.addItem(menuDataProvider.getItemAt(3));	
+				}
+				if(model.appDomain.config.modulo_equipos == Constants.SHOW)
+				{
+					configDataProvider.addItem(menuDataProvider.getItemAt(4));	
+				}
+
+				dataProvider = configDataProvider;
+				selectedIndex = 0;
+				model.changeOption(int(dataProvider.getItemAt(selectedIndex).index));
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * MESSAGES
+			 *************************************************************************************/
+			
+			
+			
+			[MessageHandler(selector="editableTextSelected")]
+			public function handleEditableTextSelected(message:ProductMessage):void
+			{
+				viewDomain.indexPanel = ViewDomain.PANEL_TEXT_BROWSER;
+				selectIndex(ViewDomain.PANEL_TEXT_BROWSER);
+			}
+			
+			
+			
+			[MessageHandler(selector="editableDesignSelected")]
+			public function handleEditableDesignSelected(message:ProductMessage):void
+			{
+				viewDomain.indexPanel = ViewDomain.PANEL_DESIGNS_BROWSER;
+				selectIndex(ViewDomain.PANEL_DESIGNS_BROWSER);
+			}
+			
+			[MessageHandler(selector="selectProductsOption")]
+			public function handleSelectProductsOption(message:ProductMessage):void
+			{
+				viewDomain.indexPanel = ViewDomain.PANEL_PRODUCTS_BROWSER;
+				selectIndex(ViewDomain.PANEL_PRODUCTS_BROWSER);
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * PRIVATE METHODS
+			 *************************************************************************************/
+			
+			
+			
+			protected function selectIndex(newIndex:int):void
+			{
+				for each(var obj:Object in dataProvider)
+				{
+					if(obj.index == newIndex)
+					{
+						selectedItem = obj;
+					}
+				}
+			}
+			
+			
+			
+			protected function changeHandler(event:IndexChangeEvent):void
+			{
+				model.changeOption(int(dataProvider.getItemAt(event.newIndex).index));
+			}
+		]]>
+	</fx:Script>
+
+	<s:layout>
+		<s:HorizontalLayout/>
+	</s:layout>
+</s:ButtonBar>

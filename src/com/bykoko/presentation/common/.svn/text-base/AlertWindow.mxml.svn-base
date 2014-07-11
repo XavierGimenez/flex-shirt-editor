@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow skinClass="com.bykoko.style.skins.CommonDialogTitleWindowSkin"
+			   xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Metadata>
+		[Event(name="close", type="flash.events.CloseEvent")] 
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.style.skins.CommonButtonSkin;
+			import com.bykoko.style.skins.CommonDialogTitleWindowSkin;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
+			
+			[Bindable]
+			public var message:String;
+
+			private var _buttonLabel:String = "";
+
+			
+			
+			/**************************************************************************************
+			 * PRIVATE METHODS
+			 *************************************************************************************/
+			
+			
+			protected function clickHandler(event:Event):void
+			{
+				var closeEvent:CloseEvent = new CloseEvent(CloseEvent.CLOSE);
+				closeEvent.detail = Alert.OK;
+				dispatchEvent(closeEvent);
+			}
+
+			
+			/**************************************************************************************
+			 * GETTERS / SETTERS
+			 *************************************************************************************/
+			
+			
+			[Bindable]
+			public function set buttonLabel(value:String):void
+			{
+				_buttonLabel = value;
+			}
+			
+			public function get buttonLabel():String
+			{
+				if(_buttonLabel == "")
+					_buttonLabel = ResourceManager.getInstance().getString('Bundles','ALERT.BTN.ACCEPT');
+				return _buttonLabel;
+			}
+
+
+
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout paddingBottom="10" 
+						  paddingLeft="20" 
+						  paddingRight="20"
+						  paddingTop="15"
+						  gap="15"
+						  horizontalAlign="center"/>
+	</s:layout>
+	
+	<s:Label text="{message}"
+			 width="100%"
+			 styleName="lucida10"
+			 textAlign="center"/>
+	
+	<s:Button id="acceptButton"
+			  width="80" 
+			  height="25"
+			  skinClass="com.bykoko.style.skins.CommonButtonSkin" 
+			  label="{resourceManager.getString('Bundles','ALERT.BTN.ACCEPT')}"
+			  useHandCursor="true"
+			  click="clickHandler(event)"/>	
+	
+</s:TitleWindow>

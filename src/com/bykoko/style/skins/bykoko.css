@@ -1,0 +1,311 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+
+/* fonts */
+@font-face
+{
+	src:url("com/bykoko/style/fonts/arial.ttf");
+	font-family: Arial;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;
+}
+
+@font-face
+{
+	src:url("com/bykoko/style/fonts/arial.ttf");
+	font-family: ArialNoCff;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:false;	
+}
+
+@font-face
+{
+	src:url("com/bykoko/style/fonts/arial_bold.ttf");
+	font-family: Arial;
+	font-style: normal;
+	font-weight: bold;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("com/bykoko/style/fonts/arial_italic.ttf");
+	font-family: Arial;
+	font-style: italic;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("com/bykoko/style/fonts/arial_bold_italic.ttf");
+	font-family: Arial;
+	font-style: italic;
+	font-weight: bold;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("com/bykoko/style/fonts/lucida_sans.ttf");
+	font-family: Lucida Sans;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("com/bykoko/style/fonts/lucida_sans_semibold.ttf");
+	font-family: Lucida Sans;
+	font-style: normal;
+	font-weight: bold;
+	embed-as-cff:true;	
+}
+
+
+
+s|Application
+{
+	background-color:#F5F5F5;
+	background-alpha: 0;
+	font-family: Lucida Sans;
+	font-size: 11;
+	color:#666666;
+}
+
+s|Group#dropDown #scroller 
+{
+	horizontalScrollPolicy: off;
+}
+
+mx|Alert
+{
+	font-family: Arial;
+	borderColor: white;
+	backgroundColor: white;
+	dropShadowVisible: true;
+	chromeColor: #f75602;
+	titleStyleName: alertTitle;
+	button-style-name: alertButtonStyle;
+}
+
+mx|ToolTip
+{
+	font-family: ArialNoCff;
+}
+
+.alertTitle
+{
+	fontSize: 14;
+	fontWeight: bold;
+	color: white;
+}
+
+.alertButtonStyle
+{
+	/*skin-class: ClassReference("com.bykoko.style.skins.ButtonOrangeCommon");*/
+}
+
+
+/* text styles */
+.lucida10Dark
+{
+	font-family: Lucida Sans;
+	font-size:10;
+	color:#333333;
+}
+
+.lucida10
+{
+	font-family: Lucida Sans;
+	font-size:10;
+}
+.lucida11White
+{
+	font-family: Lucida Sans;
+	font-size:11;
+}
+
+.arial10GreyDark
+{
+	font-family: Arial;
+	font-size:10;
+	color:#333333;
+}
+
+.arial11GreyDark
+{
+	font-family: Arial;
+	font-size:11;
+	color:#333333;
+}
+
+.arial12GreyDark
+{
+	font-family: Arial;
+	font-size:13;
+	color:#333333;
+}
+
+.mainMenuButtonLabel
+{
+	font-family: Arial;
+	font-weight: bold;
+	font-size:13;
+	color:#666666;
+}
+
+
+.arial13White
+{
+	font-family: Arial;
+	font-size:13;
+	color:#ffffff;
+}
+
+.arial13Bold
+{
+	font-family: Arial;
+	font-weight: bold;
+	font-size:13;
+	color:#666666;
+}
+.arial13BoldGreyDark
+{
+	font-family: Arial;
+	font-weight: bold;
+	font-size:13;
+	color:#666666;
+}
+
+.arial14BoldOrange
+{
+	font-family: Arial;
+	font-weight: bold;
+	font-size:14;
+	color:#ff6600;
+}
+
+.arial14BoldGreyDark
+{
+	font-family: Arial;
+	font-weight: bold;
+	font-size:14;
+	color:#333333;
+}
+
+.panelTitle
+{
+	font-family: Arial;
+	font-weight: bold;
+	font-size:16;
+	font-color:#666666;
+}
+
+.panelSubtitle
+{
+	font-family: Arial;
+	font-weight: bold;
+	font-size:13;
+	font-color:#666666;
+}
+
+.productDisplayBrowserTitle
+{
+	font-family: arial;
+	font-weight: bold;
+	font-size:15;
+	color:#666666;
+}
+
+.productAmount
+{
+	font-family: Arial;
+	font-weight: bold;
+	font-size:15;
+	text-align: left;
+	color:#666666;
+}
+
+.price
+{
+	font-family: Lucida Sans;
+	font-weight: bold;
+	font-size:18;
+	color:#9BA5A7;
+}
+
+.priceButton
+{
+	font-family: Arial;
+	font-weight: bold;
+	font-size:13;
+	color:#ffffff;
+}
+
+.productColorButtonBar
+{
+	font-family: Arial;
+	font-size:10;
+	color:#ffffff;
+}
+
+/*@font-face
+{
+	src:url("/assets/tempfonts/Action_Man.ttf");
+	font-family: ActionMan;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}*/
+/*
+@font-face
+{
+	src:url("/assets/tempfonts/Action_Man_Bold.ttf");
+	font-family: ActionMan;
+	font-style: normal;
+	font-weight: bold;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("/assets/tempfonts/BebasNeue.otf");
+	font-family: BebasNeue;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("/assets/tempfonts/Nilland.ttf");
+	font-family: Nilland;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("/assets/tempfonts/Nilland_Bold.ttf");
+	font-family: Nilland;
+	font-style: normal;
+	font-weight: bold;
+	embed-as-cff:true;	
+}
+
+
+@font-face
+{
+	src:url("/assets/tempfonts/CloisterBlack.ttf");
+	font-family: Cloister Black;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}*/

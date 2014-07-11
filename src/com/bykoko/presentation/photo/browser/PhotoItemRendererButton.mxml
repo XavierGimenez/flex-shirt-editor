@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup width="100%"
+		  buttonMode="{currentState == 'normal'}"
+		  useHandCursor="{currentState == 'normal'}"
+		  mouseEnabled="{currentState == 'normal'}"
+		  mouseOver="{alpha = 0.7}"
+		  mouseOut="{alpha = 1}"
+		  mouseChildren="false"
+		  xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="selected"/>
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+			
+			[Bindable]
+			public var text:String;
+			
+			[Bindable]
+			public var imageOn:Class;
+			
+			[Bindable]
+			public var imageOff:Class;
+		]]>
+	</fx:Script>
+
+	<s:Image id="removeImageOff"
+			 source="{imageOff}"
+			 includeIn="normal"/>
+	
+	<s:Image id="removeImageOn"
+			 source="{imageOn}"
+			 includeIn="selected"/>
+
+	<s:TextArea width="100%"
+				text="{text}"
+				heightInLines="2"
+				styleName="lucida11"
+				color.selected="#343434"
+				color.normal="#A1A3A3"
+				borderVisible="false"/>
+</s:HGroup>

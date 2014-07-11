@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer autoDrawBackground="false"
+				width="100%"
+				creationComplete="creationCompleteHandler(event)"
+				xmlns:fx="http://ns.adobe.com/mxml/2009"
+				xmlns:s="library://ns.adobe.com/flex/spark"
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				xmlns:parsley="http://www.spicefactory.org/parsley"
+				xmlns:browser="com.bykoko.presentation.photo.browser.*" 
+				xmlns:common="com.bykoko.presentation.common.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+			
+			import com.bykoko.vo.PhotoItemRendererData;
+			
+			import mx.events.FlexEvent;
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				//autoselect the option 'mantain background in image'
+				mantainBackground.currentState = "selected";
+			}
+
+
+			protected function onChangeBackgroundOption(event:MouseEvent):void
+			{
+				(event.target as PhotoItemRendererButton).currentState = "selected";
+				
+				var photoItemRendererButton:PhotoItemRendererButton = (event.target == mantainBackground)?	removeBackground:mantainBackground;
+				photoItemRendererButton.currentState = "normal";
+				
+				var eventType:String = (event.target == mantainBackground)?	"mantainBackground":"removeBackground";
+				dispatchEvent(new Event(eventType));
+			}
+
+
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<parsley:Configure/>
+	</fx:Declarations>
+
+	<!-- Parsley will manage the events Event.SELECT 
+	Event 'select' it will be catched in the PhotosBrowserPM -->
+	<fx:Metadata>
+		[Event(name="select", type="flash.events.Event")]
+		[Event(name="mantainBackground", type="flash.events.Event")]
+		[Event(name="removeBackground", type="flash.events.Event")]
+		[ManagedEvents("select")]
+		[ManagedEvents("mantainBackground")]
+		[ManagedEvents("removeBackground")]
+	</fx:Metadata>
+
+	<s:layout>
+		<s:VerticalLayout gap="5"/>
+	</s:layout>
+	
+	<s:HGroup>
+		<mx:Image source="{(data as PhotoItemRendererData).image}"
+				  maintainAspectRatio="true"
+				  verticalAlign="middle"
+				  horizontalAlign="center"
+				  width="77"
+				  height="77"
+				  smoothBitmapContent="true"
+				  useHandCursor="true"
+				  buttonMode="true"
+				  click="dispatchEvent(new Event(Event.SELECT))"/>
+		<s:VGroup width="100%">
+			<browser:PhotoItemRendererButton id="mantainBackground"
+											 text="{resourceManager.getString('Bundles','PHOTO_PANEL.MANTAIN_IMAGE_BACKGROUND')}"
+											 imageOff="{AssetsManager.buttonMantainImageBackgroundOff}"
+											 imageOn="{AssetsManager.buttonMantainImageBackgroundOn}"
+											 click="onChangeBackgroundOption(event)"/>
+			<browser:PhotoItemRendererButton id="removeBackground"
+											 text="{resourceManager.getString('Bundles','PHOTO_PANEL.REMOVE_IMAGE_BACKGROUND')}"
+											 imageOff="{AssetsManager.buttonRemoveImageBackgroundOff}"
+											 imageOn="{AssetsManager.buttonRemoveImageBackgroundOn}"
+											 click="onChangeBackgroundOption(event)"/>
+		</s:VGroup>
+	</s:HGroup>
+	<common:DottedLine/>
+</s:ItemRenderer>

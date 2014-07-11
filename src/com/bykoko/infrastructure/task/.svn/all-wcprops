@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/bykoko-product-designer/!svn/ver/54/trunk/src/com/bykoko/infrastructure/task
+END
+TaskSetFirstAvailableProductDisplay.as
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/bykoko-product-designer/!svn/ver/18/trunk/src/com/bykoko/infrastructure/task/TaskSetFirstAvailableProductDisplay.as
+END
+SequentialContextTaskGroup.as
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/bykoko-product-designer/!svn/ver/44/trunk/src/com/bykoko/infrastructure/task/SequentialContextTaskGroup.as
+END
+TaskRecreateOrderDesigns.as
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/bykoko-product-designer/!svn/ver/49/trunk/src/com/bykoko/infrastructure/task/TaskRecreateOrderDesigns.as
+END
+TaskUpdatePrice.as
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/bykoko-product-designer/!svn/ver/51/trunk/src/com/bykoko/infrastructure/task/TaskUpdatePrice.as
+END
+TaskServiceMessage.as
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/bykoko-product-designer/!svn/ver/31/trunk/src/com/bykoko/infrastructure/task/TaskServiceMessage.as
+END
+TaskCreateProductSnapshots.as
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/bykoko-product-designer/!svn/ver/38/trunk/src/com/bykoko/infrastructure/task/TaskCreateProductSnapshots.as
+END
+AbstractContextTask.as
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/bykoko-product-designer/!svn/ver/5/trunk/src/com/bykoko/infrastructure/task/AbstractContextTask.as
+END
+TaskLoadOrder.as
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/bykoko-product-designer/!svn/ver/51/trunk/src/com/bykoko/infrastructure/task/TaskLoadOrder.as
+END
+TaskLoadOrderProduct.as
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/bykoko-product-designer/!svn/ver/45/trunk/src/com/bykoko/infrastructure/task/TaskLoadOrderProduct.as
+END
+TaskRecreateOrderImages.as
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/bykoko-product-designer/!svn/ver/54/trunk/src/com/bykoko/infrastructure/task/TaskRecreateOrderImages.as
+END
+TaskLoadDefaultDesign.as
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/bykoko-product-designer/!svn/ver/6/trunk/src/com/bykoko/infrastructure/task/TaskLoadDefaultDesign.as
+END
+TaskRecreateOrderTexts.as
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/bykoko-product-designer/!svn/ver/49/trunk/src/com/bykoko/infrastructure/task/TaskRecreateOrderTexts.as
+END
+TaskLoadBootstrapDesignById.as
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/bykoko-product-designer/!svn/ver/47/trunk/src/com/bykoko/infrastructure/task/TaskLoadBootstrapDesignById.as
+END
+TaskLoadBootstrapImage.as
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/bykoko-product-designer/!svn/ver/45/trunk/src/com/bykoko/infrastructure/task/TaskLoadBootstrapImage.as
+END
+TaskLoadDefaultProduct.as
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/bykoko-product-designer/!svn/ver/31/trunk/src/com/bykoko/infrastructure/task/TaskLoadDefaultProduct.as
+END
+IContextProvider.as
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/bykoko-product-designer/!svn/ver/5/trunk/src/com/bykoko/infrastructure/task/IContextProvider.as
+END

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer autoDrawBackground="false"
+				width="100%"
+				xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				xmlns:parsley="http://www.spicefactory.org/parsley">
+
+	<!-- Parsley will manage the event 'changeSize, it will be catched in the ProductOptionsPM -->
+	<fx:Metadata>
+		[Event(name="changeSize", type="com.bykoko.presentation.product.options.MultiSizeChooserEvent")]
+		[ManagedEvents("changeSize")]
+	</fx:Metadata>
+	
+	<fx:Declarations>
+		<parsley:Configure/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.style.skins.ButtonProductSizeSkin;
+			import com.bykoko.style.skins.TextInputProductReference;
+			import com.bykoko.vo.SizeReferenceRendererData;
+			
+			import mx.resources.ResourceManager;
+			
+
+			
+			protected function handlerChangeSize(event:Event):void
+			{
+				dispatchEvent(new MultiSizeChooserEvent(MultiSizeChooserEvent.CHANGE_SIZE));
+			}
+			
+			
+			
+			protected function handlerFocusOutQuantity(event:Event):void
+			{
+				if(isNaN(numericStepper.value))
+				{
+					numericStepper.value = numericStepper.minimum;
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:HorizontalLayout gap="10"
+							verticalAlign="middle"/>
+	</s:layout>
+	
+	<s:Group>
+		<s:Button id="sizeLabel"
+				  tabEnabled="false"
+				  enabled="false"
+				  label="{(data as SizeReferenceRendererData).sizeLabel}"
+				  skinClass="com.bykoko.style.skins.ButtonProductSizeSkin"/>
+		<s:Button id="sizeLabelActive"
+				  visible="{(data as SizeReferenceRendererData).amount > 0 &amp;&amp; (data as SizeReferenceRendererData).reference != ''}"
+				  tabEnabled="false"
+				  enabled="false"
+				  label="{(data as SizeReferenceRendererData).sizeLabel}"
+				  skinClass="com.bykoko.style.skins.ButtonProductSizeActiveSkin"/>
+	</s:Group>
+	
+	<s:NumericStepper id="numericStepper"
+					  value="@{(data as SizeReferenceRendererData).amount}"
+					  minimum="0"
+					  maximum="999"
+					  width="45"
+					  focusOut="{handlerFocusOutQuantity(event)}"
+					  change="{handlerChangeSize(event)}"/>
+	<s:Label text="{ResourceManager.getInstance().getString('Bundles', 'PRODUCT_OPTIONS.REF')}"/>
+	<s:Label text="{(data as SizeReferenceRendererData).reference}"
+			 width="100%"/>
+	<!--s:TextInput id="reference"
+				 text="@{(data as SizeReferenceRendererData).reference}"
+				 width="100%"
+				 change="{dispatchEvent(new MultiSizeChooserEvent(MultiSizeChooserEvent.CHANGE_REFERENCE))}"
+				 skinClass="com.bykoko.style.skins.TextInputProductReference"/-->
+</s:ItemRenderer>

@@ -1,0 +1,267 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+@font-face
+{
+	src:url("bebasneue-webfont.ttf");
+	font-family: Bebas Neue;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("gothic-webfont.ttf");
+	font-family: Gothic;
+	font-style: normal;
+	font-weight: bold;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("helvetica_neue-webfont.ttf");
+	font-family: Helvetica Neue;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("Aldo.ttf");
+	font-family: Aldo;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("AlphaMacAOE.ttf");
+	font-family: Alpha Mac AOE;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("AMERSN.ttf");
+	font-family: Amerika Sans;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("anklepants.ttf");
+	font-family: Anklepants;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("BigMummy.ttf");
+	font-family: Big Mummy;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("BlaxSlabXXL.ttf");
+	font-family: Blax Slab XXL;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("ChickScrAOE.ttf");
+	font-family: Chicken Scratch AOE;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("CurrentlyLiving.ttf");
+	font-family: Currently Living;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("edosz.ttf");
+	font-family: Edo SZ;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("ethnocentric.ttf");
+	font-family: Ethnocentric;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("euphorigenic.ttf");
+	font-family: Euphorigenic;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("Flogged.ttf");
+	font-family: Flogged;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("gnuolane.ttf");
+	font-family: Gnuolane;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("HandTest.ttf");
+	font-family: Hand Test;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("Invaders.ttf");
+	font-family: Invaders;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("jopea302.ttf");
+	font-family: Jopea302 Sans;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("MB-Before_the_End.ttf");
+	font-family: MB Before the End;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("Megatron.ttf");
+	font-family: Megatron;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("nasalization.ttf");
+	font-family: Nasalization;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("Optimus.ttf");
+	font-family: Optimus;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("TibetBeeAOE.ttf");
+	font-family: Tibetan Beefgarden AOE;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("TIMESS.ttf");
+	font-family: Times Sans Serif;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+
+@font-face
+{
+	src:url("Tondu_Beta.ttf");
+	font-family: Tondu;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+
+@font-face
+{
+	src:url("Transformers.ttf");
+	font-family: Transformers;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("WLScribbleFlinger.ttf");
+	font-family: WL Scribble Flinger;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+
+@font-face
+{
+	src:url("AllStarResort.ttf");
+	font-family: All Star;
+	font-style: normal;
+	font-weight: normal;
+	embed-as-cff:true;	
+}
+

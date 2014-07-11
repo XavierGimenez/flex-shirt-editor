@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:CommonPanel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					xmlns:presentation="com.bykoko.presentation.*" 
+					xmlns:common="com.bykoko.presentation.common.*"
+					xmlns:parsley="http://www.spicefactory.org/parsley" 
+					xmlns:browser="com.bykoko.presentation.product.browser.*">
+	
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+			
+			import com.bykoko.domain.AppDomain;
+			import com.bykoko.infrastructure.message.TaskMessage;
+
+			
+			[Inject]
+			[Bindable]
+			public var appDomain:AppDomain;
+			
+			
+			
+			/**************************************************************************************
+			 * PUBLIC METHODS
+			 *************************************************************************************/
+			
+			
+			override public function initializePanel():void
+			{
+				if(!isInitialized)
+				{
+					super.initializePanel();
+				}
+			}
+			
+			
+			//
+			[MessageHandler(selector="loadProductRequest")]
+			public function handleTaskMessage(taskMessage:TaskMessage):void
+			{
+				//task request to auto-select the product of the bootstrap.
+				//this will starts a process:
+				//1. select category of the product
+				//2. if exists, select subcategory of the product
+				//3. the ProductsBrowser view will send a message received by the task
+				if(appDomain.bootstrapTaskGroup)
+				{
+					productsBrowser.selectedCategory = appDomain.getCategoryById(appDomain.config.articulo.cat);
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<!-- header panel -->
+	<common:CommonPanelHeader image="{AssetsManager.chooseProductPanel}"
+							  title="{resourceManager.getString('Bundles', 'PRODUCT_PANEL.TITLE')}"/>	
+	
+	<common:DottedLine/>
+	
+	<!-- product browser -->
+	<browser:ProductsBrowser id="productsBrowser"/>
+	
+</common:CommonPanel>

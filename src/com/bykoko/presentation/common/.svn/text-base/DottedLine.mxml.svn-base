@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Rect width="100%"
+		height="1"
+		xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+		]]>
+	</fx:Script>
+	
+	<s:fill>
+		<s:BitmapFill source="{AssetsManager.dotted}" fillMode="repeat"/>
+	</s:fill>
+</s:Rect>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:CommonPanel height="100%"
+					show="onShowPanel(event)"
+					xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					xmlns:common="com.bykoko.presentation.common.*" 
+					xmlns:browser="com.bykoko.presentation.product.browser.*" 
+					xmlns:teams="com.bykoko.presentation.teams.*" 
+					xmlns:parsley="http://www.spicefactory.org/parsley" 
+					xmlns:vo="com.bykoko.vo.*">
+	
+	<fx:Declarations>
+		<teams:TeamsPanelPM id="model"/>
+		<parsley:Configure targets="{model}"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+			
+			import com.bykoko.infrastructure.message.ProductMessage;
+			import com.bykoko.presentation.product.designer.EditableTextTeam;
+			import com.bykoko.style.skins.CommonTabBarSkin;
+			import com.bykoko.vo.FontDesigner;
+			import com.bykoko.vo.TeamProductItemData;
+			import com.bykoko.vo.xmlmapping.config.Color;
+			import com.bykoko.vo.xmlmapping.product.Articulo;
+			import com.bykoko.vo.xmlmapping.product.Talla;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			
+			
+			/**************************************************************************************
+			 * PUBLIC METHODS
+			 *************************************************************************************/
+			
+			
+			override public function initializePanel():void
+			{
+				if(!isInitialized)
+				{
+					super.initializePanel();
+				}
+			}
+			
+			
+			
+			[Init]
+			public function init():void
+			{
+				addEventListener("changeSize", onProductSizeChange);
+				addEventListener("remove", removeTeamProduct);
+				addEventListener("showProduct", onShowTeamProduct);
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * EVENTS
+			 *************************************************************************************/
+			
+			
+			
+			private function onProductSizeChange(event:Event):void
+			{
+				model.updateTeamProducts((event.target as SizeChooserItemRenderer).amount, (event.target as SizeChooserItemRenderer).data as Talla);
+			}
+			
+			
+			
+			private function removeTeamProduct(event:Event):void
+			{
+				var teamProductItemData:TeamProductItemData = ((event.target as TeamProductItemRenderer).data as EditableTextTeam).teamProductItemData as TeamProductItemData;
+				
+				//look the size of the removed product and change also the value of the numericStepper
+				var index:int = model.appDomain.selectedColorProduct.tallas.tallas.indexOf(teamProductItemData.talla);
+				(sizesList.dataGroup.getElementAt(index) as SizeChooserItemRenderer).numericStepper.value--;
+				
+				//remove the item from the dataprovider
+				model.removeTeamProduct((event.target as TeamProductItemRenderer).data as EditableTextTeam);
+			}
+			
+			
+			
+			//Handles events when the textInputs of the renderer change, or when the 'view' button is clicked
+			private function onShowTeamProduct(event:Event):void
+			{
+				model.showText((event.target as TeamProductItemRenderer).data as EditableTextTeam);
+			}
+			
+			
+			
+			//
+			protected function onShowPanel(event:FlexEvent):void
+			{
+				viewStack.selectedIndex = 0;
+				
+				//auto select the first category in the products browser (the products
+				//browser will try to select the subcategory or load the products and
+				//will launch and event)
+				productsBrowser.selectedCategoryIndex = 0;
+			}
+
+
+			
+			//
+			protected function productsListAvailableHandler(event:Event):void
+			{
+				//the list of products is already available, autoselect the first one
+				model.appDomain.selectProduct(model.appDomain.products.getItemAt(0) as Articulo);
+			}
+
+			
+			
+			/**************************************************************************************
+			 * MESSAGES
+			 *************************************************************************************/
+			
+			
+			
+			//
+			[MessageHandler(selector="productSelected")]
+			public function handleProductMessage(productMessage:ProductMessage):void
+			{
+				//update the dataprovider of the datagroup products
+				productsDataGroup.dataProvider = null;
+				productsDataGroup.dataProvider = model.appDomain.editableDesigns;
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<!-- header panel -->
+	<common:CommonPanelHeader image="{AssetsManager.teamsPanel}"
+							  title="{resourceManager.getString('Bundles', 'TEAMS_PANEL.TITLE')}"/>
+
+	<s:TabBar dataProvider="{viewStack}"
+			  width="100%"
+			  skinClass="com.bykoko.style.skins.CommonTabBarSkin"/>
+	<mx:ViewStack id="viewStack"
+				  width="100%"
+				  height="100%"
+				  borderStyle="none"> 
+		
+		<!-- products browser -->
+		<s:NavigatorContent label="{resourceManager.getString('Bundles','TEAMS_PANEL.TAB_BAR.OPTION1')}"
+							styleName="arial11GreyDark"
+							width="100%">
+			<browser:ProductsBrowser id="productsBrowser"
+									 productsListAvailable="productsListAvailableHandler(event)"/>
+		</s:NavigatorContent>
+		
+		<!-- settings -->
+		<s:NavigatorContent label="{resourceManager.getString('Bundles','TEAMS_PANEL.TAB_BAR.OPTION2')}"
+							styleName="arial11GreyDark"
+							height="100%"
+							width="100%">
+			<s:layout>
+				<s:VerticalLayout gap="10"/>
+			</s:layout>
+			<s:Label text="{resourceManager.getString('Bundles','TEAMS_PANEL.INSTRUCTION_SIZES')}"/>
+			
+			<!-- product sizes list. It lists the available size for the 
+				selected product and selected color product
+			-->
+			<s:List id="sizesList"
+					borderVisible="false"
+					width="100%"
+					useVirtualLayout="true"
+					dataProvider="{new ArrayCollection(model.appDomain.selectedColorProduct.tallas.tallas)}"
+					itemRenderer="com.bykoko.presentation.teams.SizeChooserItemRenderer">
+				<s:layout>
+					<s:TileLayout requestedColumnCount="3"
+								  horizontalGap="5"
+								  verticalGap="10"
+								  columnWidth="75"/>
+				</s:layout>
+			</s:List>
+			
+			<!-- fonts list -->
+			<common:DottedLine/>
+			<common:FontsList id="fontsList"
+							  preSelectedFont="{model.appDomain.designFonts.getItemAt(0) as FontDesigner}"
+							  select="{model.setTextFont((fontsList.list.selectedItem as FontDesigner).fontName)}"/>
+			
+			<!-- colors list -->
+			<common:DottedLine/>
+			<s:HGroup verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('Bundles', 'TEXT_PANEL.FONT_COLOR')}"
+						 styleName="lucida11"/>
+				<mx:ColorPicker id="colorPicker"
+								change="{model.setTextColor(colorPicker.selectedColor)}"/>
+			</s:HGroup>
+			<common:DottedLine/>
+			
+			<!-- collection of editableTextTeams -->
+			<s:HGroup width="100%">
+				<s:Label text="{resourceManager.getString('Bundles','TEAMS_PANEL.SIZE')}"
+						 width="40"/>
+				<s:Label text="{resourceManager.getString('Bundles','TEAMS_PANEL.NAME')}"/>
+				<s:Label text="{resourceManager.getString('Bundles','TEAMS_PANEL.NUMBER')}"
+						 width="35"/>
+			</s:HGroup>
+			<s:Scroller width="100%"
+						height="100%"
+						verticalScrollPolicy="auto"
+						horizontalScrollPolicy="off">
+				<s:DataGroup id="productsDataGroup"
+							 dataProvider="{model.appDomain.editableDesigns}"
+							 itemRenderer="com.bykoko.presentation.teams.TeamProductItemRenderer">
+					<s:layout>
+						<s:VerticalLayout/>
+					</s:layout>
+				</s:DataGroup>
+			</s:Scroller>
+		</s:NavigatorContent>
+	</mx:ViewStack> 
+	
+</common:CommonPanel>

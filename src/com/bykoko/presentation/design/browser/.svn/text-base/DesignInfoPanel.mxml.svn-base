@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup width="300"
+		  height="145"
+		  gap="0"
+		  xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  clipAndEnableScrolling="false">
+
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+			
+			import com.bykoko.vo.xmlmapping.design.Diseno;
+			
+			import flash.filters.GlowFilter;
+			
+			[Bindable]
+			public var design:Diseno;
+		]]>
+	</fx:Script>
+	
+	<s:Path data="M 0 33
+				L 7 0
+				L 7 145
+				L 0 113
+				Z">
+		<s:fill>
+			<s:LinearGradient>
+				<s:GradientEntry color="0xA93E15"/>
+				<s:GradientEntry color="0xE3541D"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Path>
+	
+	<s:SkinnableContainer width="100%"
+						  height="100%"
+						  backgroundColor="0xffffff"
+						  filters="{[new GlowFilter(0x333333, 0.3, 5, 5)]}">
+		<s:layout>
+			<s:HorizontalLayout paddingTop="20"
+								paddingLeft="20"
+								paddingRight="10"
+								paddingBottom="10"/>
+		</s:layout>
+		<s:VGroup width="100%"
+				  height="100%">
+			
+			<!-- user avatar + info -->
+			<s:HGroup width="100%" 
+					  gap="10">
+				<mx:Image source="{design.logo}"
+						  maintainAspectRatio="true"
+						  width="100"
+						  height="100"
+						  smoothBitmapContent="true"/>
+				<s:VGroup width="100%" gap="4">
+					<s:Label text="{design.name}"
+							 width="100%"
+							 styleName="arial14BoldGreyDark"
+							 paddingBottom="6"/>
+					<s:Label text="{resourceManager.getString('Bundles','DESIGN_PANEL.DESIGN_INFO.AUTHOR')}"
+							 width="100%"
+							 styleName="arial14BoldGreyDark"/>
+					<s:Label text="{design.usr}"
+							 width="100%"
+							 styleName="arial14BoldOrange"
+							 paddingBottom="6"/>
+					<s:Label text="{resourceManager.getString('Bundles','DESIGN_PANEL.DESIGN_INFO.STYLE')}"
+							 width="100%"
+							 styleName="arial14BoldGreyDark"/>
+					<s:RichText text="{design.estilos}"
+								maxDisplayedLines="2"
+								width="100%"
+								styleName="arial13Dark"/>
+				</s:VGroup>
+			</s:HGroup>
+			
+			<!-- amount of uses of design and awards -->
+			<s:HGroup width="100%"
+					  gap="4">
+				<mx:Image source="{AssetsManager.iconShirt}"/>
+				<s:Label text="{design.disenos}"
+						 styleName="arial10GreyDark"
+						 paddingRight="10"/>
+				<mx:Image source="{AssetsManager.iconAward}"/>
+				<s:Label text="{design.premios}"
+						 styleName="arial10GreyDark"/>
+			</s:HGroup>
+		</s:VGroup>
+	</s:SkinnableContainer>
+</s:HGroup>

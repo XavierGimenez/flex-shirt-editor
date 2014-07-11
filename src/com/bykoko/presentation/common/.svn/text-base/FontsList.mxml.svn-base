@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup horizontalAlign="left"
+		  verticalAlign="middle"
+		  width="100%"
+		  xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  xmlns:parsley="http://www.spicefactory.org/parsley">
+	
+	<fx:Metadata>
+		[Event(name="select", type="flash.events.Event")]	
+	</fx:Metadata>
+	
+	<fx:Declarations>
+		<parsley:Configure/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.domain.AppDomain;
+			import com.bykoko.presentation.text.FontItemRenderer;
+			import com.bykoko.style.skins.ComboBoxFontDesigner;
+			import com.bykoko.vo.FontDesigner;
+			import com.bykoko.vo.xmlmapping.config.Font;
+			
+			import mx.collections.ArrayCollection;
+			[Inject]
+			[Bindable]
+			public var appDomain:AppDomain;
+			
+			private var timer:Timer;
+			private var defaultFontDesigner:FontDesigner;
+			
+			
+			
+			/**************************************************************************************
+			 * SETTERS / GETTERS
+			 *************************************************************************************/
+			
+			
+			
+			public function set preSelectedFont(fontDesigner:FontDesigner):void
+			{
+				defaultFontDesigner = fontDesigner;
+				
+				//wait some time until the dataProvider for the fonts list is set
+				timer = new Timer(300);
+				timer.addEventListener(TimerEvent.TIMER, onTimerEvent);
+				timer.start();
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * EVENTS
+			 *************************************************************************************/
+			
+			
+			
+			
+			private function onTimerEvent(event:TimerEvent):void
+			{
+				timer.removeEventListener(TimerEvent.TIMER, onTimerEvent);
+				timer.stop();
+				for(var i:int = 0; i<list.dataProvider.length; i++)
+				{
+					var fontDesigner:FontDesigner = list.dataProvider.getItemAt(i) as FontDesigner;
+					if(fontDesigner.fontName == defaultFontDesigner.fontName)
+					{
+						list.selectedIndex = i;
+						break;
+					}
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Label text="{resourceManager.getString('Bundles', 'TEXT_PANEL.FONTS')}"
+			 styleName="lucida11"
+			 width="40%"/>
+	
+	<s:ComboBox id="list"
+				selectedIndex="0"
+				width="60%"
+				dataProvider="{appDomain.designFonts}"
+				labelField="fontName"
+				itemRenderer="com.bykoko.presentation.text.FontItemRenderer"
+				skinClass="com.bykoko.style.skins.ComboBoxFontDesigner"
+				change="{dispatchEvent(new Event(Event.SELECT))}"/>
+</s:HGroup>

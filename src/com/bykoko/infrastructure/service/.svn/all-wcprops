@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/bykoko-product-designer/!svn/ver/51/trunk/src/com/bykoko/infrastructure/service
+END
+IApiHttpService.as
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/bykoko-product-designer/!svn/ver/51/trunk/src/com/bykoko/infrastructure/service/IApiHttpService.as
+END
+LocalApiHttpService.as
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/bykoko-product-designer/!svn/ver/4/trunk/src/com/bykoko/infrastructure/service/LocalApiHttpService.as
+END
+ApiHttpService.as
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/bykoko-product-designer/!svn/ver/56/trunk/src/com/bykoko/infrastructure/service/ApiHttpService.as
+END

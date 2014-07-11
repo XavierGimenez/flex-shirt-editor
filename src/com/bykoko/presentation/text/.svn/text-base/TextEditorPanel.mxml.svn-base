@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:CommonPanel show="showHandler(event)" 
+					xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					xmlns:common="com.bykoko.presentation.common.*" 
+					xmlns:text="com.bykoko.presentation.text.*" 
+					xmlns:parsley="http://www.spicefactory.org/parsley" 
+					xmlns:skins="com.bykoko.style.skins.*">
+
+	<fx:Declarations>
+		<text:TextEditorPanelPM id="model"/>
+		<parsley:Configure targets="{model}"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+			
+			import com.bykoko.infrastructure.message.EditableTextMessage;
+			import com.bykoko.infrastructure.message.ProductMessage;
+			import com.bykoko.style.skins.ButtonBarTextAlignSkin;
+			import com.bykoko.style.skins.ButtonBarTextColorSkin;
+			import com.bykoko.style.skins.ButtonTextOptionSkin;
+			import com.bykoko.style.skins.CommonButtonSkin;
+			import com.bykoko.vo.FontDesigner;
+			import com.bykoko.vo.xmlmapping.config.Color;
+			
+			import flash.text.engine.FontLookup;
+			import flash.text.engine.FontPosture;
+			import flash.text.engine.FontWeight;
+			import flash.text.engine.RenderingMode;
+			
+			import flashx.textLayout.edit.ElementRange;
+			import flashx.textLayout.edit.SelectionState;
+			import flashx.textLayout.elements.TextFlow;
+			import flashx.textLayout.formats.ITextLayoutFormat;
+			import flashx.textLayout.formats.TextAlign;
+			import flashx.textLayout.formats.TextLayoutFormat;
+			
+			import mx.events.ColorPickerEvent;
+			import mx.events.FlexEvent;
+			
+			import spark.components.RichEditableText;
+			
+			private var firstShow:Boolean = true;
+			
+			/**************************************************************************************
+			 * PUBLIC METHODS
+			 *************************************************************************************/
+			
+			
+			override public function initializePanel():void
+			{
+				if(!isInitialized)
+				{
+					super.initializePanel();
+				}
+			}
+
+			
+			/**************************************************************************************
+			 * EVENTS
+			 *************************************************************************************/
+			
+			
+			
+			private function handlerAddTextButtonClick():void
+			{
+				//create a TextLayoutFormat object to be used when a new text is created
+				var textLayoutFormat:TextLayoutFormat = new TextLayoutFormat();
+				textLayoutFormat.fontFamily = (fontsList.list.selectedItem as FontDesigner).fontName;
+				textLayoutFormat.fontSize = textSizeNumericStepper.value;
+				textLayoutFormat.fontWeight = (textBoldButton.selected)?	FontWeight.BOLD:FontWeight.NORMAL;
+				textLayoutFormat.fontStyle = (textItalicButton.selected)?	FontPosture.ITALIC:FontPosture.NORMAL;
+				textLayoutFormat.textAlign = (textAlignButtonBar.selectedIndex == 0)?	TextAlign.LEFT:
+											 (textAlignButtonBar.selectedIndex == 1)?	TextAlign.CENTER:TextAlign.RIGHT;
+				textLayoutFormat.fontLookup = FontLookup.EMBEDDED_CFF;
+				textLayoutFormat.renderingMode = RenderingMode.CFF;
+				textLayoutFormat.color = colorPicker.selectedColor;
+				model.sendMessageToAddText(textLayoutFormat);
+			}
+
+			
+
+			private function handlerSelectFont():void
+			{
+				//check if the selected text style options are available for the selected font.
+				//Not all the fonts have all the font faces
+				var selectedFont:FontDesigner = fontsList.list.selectedItem as FontDesigner;
+				
+				//the selected font has the boldItalic facefont?
+				if(textBoldButton.selected && textItalicButton.selected)
+				{
+					textBoldButton.selected = textItalicButton.selected = selectedFont.boldItalic;
+				}
+				//the selected font has the bold facefont?
+				else if(textBoldButton.selected)
+				{
+					textBoldButton.selected = selectedFont.bold;
+				}
+				//the selected font has the italic facefont?
+				else if(textItalicButton.selected)
+				{
+					textItalicButton.selected = selectedFont.italic;
+				}
+				
+				model.setTextFont(selectedFont.fontName);
+			}
+
+			
+			
+			/**************************************************************************************
+			 * MESSAGES
+			 *************************************************************************************/
+			
+			
+			[MessageHandler(selector="selectionChange")]
+			public function handleEditableTextMessage(editableTextMessage:EditableTextMessage):void
+			{
+				//the message sent from the ProductDesignerPM when the EditableText changes
+				//its selection ** HAPPENS BEFORE ** the mouseDown event of the EditableText.
+				//So, we get the EditableText instance from the message, not from
+				//app.editableItem, which is set because of the mouseDown event
+
+				var selectionState:SelectionState = editableTextMessage.selectionState;
+				var selectedElementRange:ElementRange = ElementRange.createElementRange(selectionState.textFlow, selectionState.absoluteStart, selectionState.absoluteEnd);
+				
+				// set display according to the values at the beginning of the selection range.  
+				//For point selection/characterFormat use getCommonCharacterFormat as that 
+				//tracks pending attributes waiting for the next character
+				var characterFormat:ITextLayoutFormat = (editableTextMessage.textFlow.interactionManager.activePosition == editableTextMessage.textFlow.interactionManager.anchorPosition) ? editableTextMessage.textFlow.interactionManager.getCommonCharacterFormat() : selectedElementRange.characterFormat;
+				var paragraphFormat:ITextLayoutFormat = selectedElementRange.paragraphFormat;
+				var containerFormat:ITextLayoutFormat = selectedElementRange.containerFormat;
+				
+				//update font family
+				for(var i:int = 0; i<model.appDomain.config.text.fonts.fontsForEditableTexts.length; i++)
+				{
+					if( (model.appDomain.config.text.fonts.fontsForEditableTexts.source[i] as FontDesigner).fontName.toLocaleLowerCase() == String(characterFormat.fontFamily).toLowerCase())
+					{
+						fontsList.list.selectedIndex = i;
+						break;
+					}
+				}	
+
+				//update size, bold style and italic style
+				textSizeNumericStepper.value = characterFormat.fontSize.toString();
+				textBoldButton.selected = (characterFormat.fontWeight.toString() == FontWeight.BOLD);
+				textItalicButton.selected = (characterFormat.fontStyle.toString() == FontPosture.ITALIC);
+				
+				//update text align
+				textAlignButtonBar.selectedIndex = (paragraphFormat.textAlign.toString() == TextAlign.LEFT)? 0:
+													(paragraphFormat.textAlign == TextAlign.CENTER)? 1:2;
+				
+				//update color
+				colorPicker.selectedColor = characterFormat.color;
+			}
+
+			
+			
+			protected function showHandler(event:FlexEvent):void
+			{
+				if(firstShow)
+				{
+					firstShow = false;
+					
+					//prevent from creating a text automtically if the app is recreating an order 
+					if(model.appDomain.orderFlashvars == null)
+					{
+						handlerAddTextButtonClick();
+					}
+				}
+			}
+
+		]]>
+	</fx:Script>
+	
+	<common:layout>
+		<s:VerticalLayout gap="18"/>
+	</common:layout>
+	
+	<!-- header panel -->
+	<common:CommonPanelHeader image="{AssetsManager.chooseTextPanel}"
+							  title="{resourceManager.getString('Bundles', 'TEXT_PANEL.TITLE')}"/>
+	
+	<!-- list of fonts --> 
+	<!-- 	callLater is used because applying the text causes combobox not closes (maybe because
+			the combobox loses the focus?). Use callLater so the comboboxes updates in the next cycle
+	-->
+	<common:FontsList id="fontsList"
+					  select="{callLater(handlerSelectFont)}"/>	
+	<common:DottedLine/>
+
+	<s:HGroup width="100%">
+		
+		<!-- text size -->
+		<s:HGroup horizontalAlign="left"
+				  verticalAlign="middle">
+			<s:Label text="{resourceManager.getString('Bundles', 'TEXT_PANEL.FONT_SIZE')}"
+					 styleName="lucida11"/>
+			<s:NumericStepper id="textSizeNumericStepper"
+							  value="14"
+							  minimum="12"
+							  maximum="70"
+							  change="{model.setTextSize(event)}"/>
+		</s:HGroup>
+		
+		<!-- text style -->
+		<s:HGroup horizontalAlign="right"
+				  verticalAlign="middle"
+				  width="100%">
+			<s:Label text="{resourceManager.getString('Bundles', 'TEXT_PANEL.FONT_STYLE')}"
+					 styleName="lucida11"/>
+			<text:TextOptionButton id="textBoldButton"
+								   icon="{AssetsManager.buttonFontStyleBold}"
+								   skinClass="com.bykoko.style.skins.ButtonTextOptionSkin"
+								   enabled="{(fontsList.list.selectedItem as FontDesigner).bold}"								   
+								   change="{model.setBoldStyle(event)}"/>
+			<text:TextOptionButton id="textItalicButton"
+								   icon="{AssetsManager.buttonFontStyleItalic}"
+								   skinClass="com.bykoko.style.skins.ButtonTextOptionSkin"
+								   enabled="{(fontsList.list.selectedItem as FontDesigner).italic}"
+								   change="{model.setItalicStyle(event)}"/>
+		</s:HGroup>
+	</s:HGroup>
+	
+	<!-- text colors and alignment -->
+	<s:Group width="100%">
+		<s:HGroup top="0"
+				  left="0"				  
+				  verticalAlign="middle">
+			<s:Label text="{resourceManager.getString('Bundles', 'TEXT_PANEL.FONT_COLOR')}"
+					 styleName="lucida11"/>
+			
+			<!-- 	callLater is used because the colorPicker gets the focus and that makes not
+					having the focus in the textFlow. With callLater the focus goes to the textFlow
+			-->
+			<mx:ColorPicker id="colorPicker"
+							change="{callLater(model.setTextColor, [event])}"/>
+		</s:HGroup>
+	
+		<!-- text alignment -->
+		<s:HGroup verticalAlign="middle"
+				  top="0"
+				  right="0">
+			<s:Label text="{resourceManager.getString('Bundles', 'TEXT_PANEL.FONT_ALIGNMENT')}"
+					 styleName="lucida11"/>
+			<s:ButtonBar id="textAlignButtonBar"
+						 selectedIndex="1"
+						 skinClass="com.bykoko.style.skins.ButtonBarTextAlignSkin"
+						 change="{model.setTextAlign(event)}">
+				<s:layout>
+					<s:HorizontalLayout gap="4"/>
+				</s:layout>
+				
+				<s:dataProvider>
+					<s:ArrayCollection>
+						<s:source>
+							<fx:Object align="{TextAlign.LEFT}"
+									   icon="{AssetsManager.buttonFontStyleLeft}"/>
+							<fx:Object align="{TextAlign.CENTER}"
+									   icon="{AssetsManager.buttonFontStyleCenter}"/>
+							<fx:Object align="{TextAlign.RIGHT}"
+									   icon="{AssetsManager.buttonFontStyleRight}"/>
+						</s:source>
+					</s:ArrayCollection>
+				</s:dataProvider>
+			</s:ButtonBar>
+		</s:HGroup>
+	</s:Group>
+	
+	<!-- button to add a text to the design -->
+	<s:HGroup horizontalAlign="center"
+			  width="100%">
+		<s:Button label="{resourceManager.getString('Bundles', 'TEXT_PANEL.ADD_TEXT')}"
+				  skinClass="com.bykoko.style.skins.CommonButtonSkin"
+				  width="100%"
+				  height="25"
+				  click="{handlerAddTextButtonClick()}"/>
+	</s:HGroup>
+</common:CommonPanel>

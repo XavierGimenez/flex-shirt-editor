@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:CommonPanel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					xmlns:common="com.bykoko.presentation.common.*" 
+					xmlns:photo="com.bykoko.presentation.photo.*" 
+					xmlns:parsley="http://www.spicefactory.org/parsley" 
+					xmlns:browser="com.bykoko.presentation.photo.browser.*">
+
+	<common:states>
+		<s:State name="default"/>
+		<s:State name="loadingImage"/>
+	</common:states>
+	
+	<fx:Declarations>
+		<browser:PhotosBrowserPM id="model"
+								 setDefaultState="setDefaultState()"
+								 setLoadingState="setLoadingState()"/>
+		<parsley:Configure targets="{model}"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+			
+			import com.bykoko.presentation.common.CircleSlicePreloader;
+			import com.bykoko.style.skins.CommonButtonSkin;
+			
+			import mx.core.FlexGlobals;
+			import mx.managers.CursorManager;
+			
+
+
+			/**************************************************************************************
+			 * PUBLIC METHODS
+			 *************************************************************************************/
+			
+			
+			override public function initializePanel():void
+			{
+				if(!isInitialized)
+				{
+					super.initializePanel();
+				}
+			}
+			
+			
+			
+			//
+			public function setDefaultState():void
+			{
+				CursorManager.removeBusyCursor();
+				FlexGlobals.topLevelApplication.enabled = true;
+				currentState = "default"; 
+			}
+			
+			
+			
+			//
+			public function setLoadingState():void 
+			{
+				CursorManager.setBusyCursor();
+				FlexGlobals.topLevelApplication.enabled = false;
+				currentState = "loadingImage";
+			}
+			
+			
+			
+			/**************************************************************************************
+			* PRIVATE METHODS
+			*************************************************************************************/
+			
+			
+			
+			//
+			private function addImageLoader():void
+			{
+				preloaderHolder.addChild(new CircleSlicePreloader());
+			}
+		]]>
+	</fx:Script>
+	
+	
+	<!-- header panel -->
+	<common:CommonPanelHeader image="{AssetsManager.loadPhotoPanel}"
+							  title="{resourceManager.getString('Bundles', 'PHOTO_PANEL.TITLE')}"/>
+	
+	<s:Button label="{resourceManager.getString('Bundles', 'PHOTO_PANEL.LOAD_BUTTON')}"
+			  width="100%"
+			  skinClass="com.bykoko.style.skins.CommonButtonSkin"
+			  click="model.openFileDialog(event)"/>
+	<s:TextArea width="100%"
+				heightInLines="5"
+				styleName="lucida11"
+				text="{resourceManager.getString('Bundles', 'PHOTO_PANEL.INSTRUCTIONS')}"
+				borderVisible="false"/>
+	<common:DottedLine/>
+	
+	<s:Label text="{resourceManager.getString('Bundles','PHOTO_PANEL.BACKGROUND_OPTIONS')}"
+			 styleName="panelSubtitle"
+			 visible="{designsDataGroup.dataProvider.length > 0}"/>
+	
+	<s:VGroup includeIn="loadingImage"
+			  verticalAlign="middle"
+			  horizontalAlign="center"
+			  width="100%"
+			  paddingTop="20"
+			  gap="25">
+		<s:Label text="{resourceManager.getString('Bundles', 'PHOTO_PANEL.LOADING_IMAGE_MESSAGE')}"/>
+		<s:Group creationComplete="addImageLoader()">
+			<s:SpriteVisualElement id="preloaderHolder"/>
+		</s:Group>
+	</s:VGroup>
+	
+		<s:Scroller width="100%"
+					height="100%"
+					includeIn="default"
+					verticalScrollPolicy="auto"
+					horizontalScrollPolicy="off">
+			<s:DataGroup id="designsDataGroup"
+						 width="100%"
+						 dataProvider="{model.appDomain.uploadedBitmaps}"
+						 itemRenderer="com.bykoko.presentation.photo.browser.PhotoItemRenderer">
+				<s:layout>
+					<s:VerticalLayout/>
+				</s:layout>
+			</s:DataGroup>			
+		</s:Scroller>
+</common:CommonPanel>

@@ -1,0 +1,91 @@
+#common
+YES=Sí
+NO=No
+
+#main menu
+MAIN_MENU.CHOOSE_PRODUCT=Escoge producto
+MAIN_MENU.CHOOSE_DESIGN=Elige diseño
+MAIN_MENU.LOAD_PHOTO=Carga una foto
+MAIN_MENU.ADD_TEXT=Añade texto
+MAIN_MENU.TEAMS=Especial equipos
+MAIN_MENU.NEW_DESIGN=Nuevo diseño
+
+
+#products panel
+PRODUCT_PANEL.TITLE=Escoge producto
+PRODUCT_PANEL.CATEGORIES=Categorias
+PRODUCT_PANEL.CATALOG=Catálogo
+
+#product options
+PRODUCT_OPTIONS.DISPLAYS_BROWSER.TITLE=Vista
+PRODUCT_OPTIONS.AMOUNT=Cantidad
+PRODUCT_OPTIONS.REF=Ref.
+PRODUCT_OPTIONS.MULTISELECTION.ALERT=Hay algunas tallas ## para las que se ha introducido una referencia o una cantidad, pero no ambos valores.\nEstas tallas no serán incluidas en el pedido.\n¿Quieres continuar? 
+
+#designs panel
+DESIGN_PANEL.TITLE=Escoge un diseño
+DESIGN_PANEL.CATEGORIES=Categorias
+DESIGN_PANEL.DESIGN_INFO.AUTHOR=Diseñado por
+DESIGN_PANEL.DESIGN_INFO.STYLE=Estilo
+DESIGN_PANEL.DESIGN_INFO.COLOR=Elige el color
+DESIGN_PANEL.DESIGN_INFO.RESTORE_DEFAULT_COLORS=Color original
+
+#photo panel
+PHOTO_PANEL.TITLE=Cargar foto
+PHOTO_PANEL.LOAD_BUTTON=Cargar foto
+PHOTO_PANEL.INSTRUCTIONS=Puede subir fotos en formato png o jpg. Mínimo de 50x50 píxels, máximo de 4000x4000 píxels. Peso máximo de 10Mb.
+PHOTO_PANEL.LOADING_IMAGE_MESSAGE=Cargando imagen...
+PHOTO_PANEL.FILE_FILTER=Imagenes
+PHOTO_PANEL.WARNING.FILE_WEIGHT_WRONG=El tamaño del archivo es superior a 10Mb...
+PHOTO_PANEL.WARNING.FILE_SIZE_WRONG=El tamaño de la imagen no es correcto. Por favor, cargar una fotos con las medidas correctas.
+PHOTO_PANEL.WARNING.IO_ERROR=No ha sido posible cargar la imagen. Compruebe su conexión de red e inténtelo de nuevo
+PHOTO_PANEL.WARNING.SECURITY_ERROR=Ha ocurrido un error de seguridad. No es posible cargar la imagen.
+PHOTO_PANEL.WARNING.UPLOAD_ERROR=Ha ocurrido un problema al subir la imagen. Inténteno de nuevo más tarde.
+PHOTO_PANEL.BACKGROUND_OPTIONS=Opciones de fondo
+PHOTO_PANEL.REMOVE_IMAGE_BACKGROUND=Eliminar color\nde fondo
+PHOTO_PANEL.MANTAIN_IMAGE_BACKGROUND=Mantener color\nde fondo
+
+#text panel
+TEXT_PANEL.TITLE=Añade texto
+TEXT_PANEL.FONTS=Tipografias
+TEXT_PANEL.FONT_SIZE=Tamaño
+TEXT_PANEL.FONT_STYLE=Estilo
+TEXT_PANEL.FONT_COLOR=Color
+TEXT_PANEL.FONT_ALIGNMENT=Alinear
+TEXT_PANEL.ADD_TEXT=Añadir texto
+TEXT_EDITABLE.DEFAULT_TEXT=Tu diseño empieza aquí
+
+#teams panel
+TEAMS_PANEL.TITLE=Especial equipos
+TEAMS_PANEL.INSTRUCTION_SIZES=Indícanos primero las tallas
+TEAMS_PANEL.SIZE=Talla
+TEAMS_PANEL.NUMBER=Dorsal
+TEAMS_PANEL.NAME=Nombre
+TEAMS_PANEL.SHOW=Ver
+TEAMS_PANEL.TAB_BAR.OPTION1=Elige el producto
+TEAMS_PANEL.TAB_BAR.OPTION2=Personaliza tu equipo
+
+#add to cart button
+BUTTON.ADD_TO_CART=Guardar producto
+
+
+#alerts
+ALERT.TITLE.WARNING=Atención
+ALERT.BTN.ACCEPT=Aceptar
+ALERT.BTN.CANCEL=Cancelar
+ALERT.CHOOSE_NEW_PRODUCT=Escogiendo un nuevo producto perderàs el diseño actual. Quieres continuar?
+ALERT.START_NEW_DESIGN=Quieres empezar un nuevo diseño?
+ALERT.DESIGN_NOT_VALID=Hay elementos fuera del área válida de diseño. Por favor, corrige tu diseño para poder realizar la compra.
+ALERT.RESET_NEW_DESIGN=Tu diseño actual va a ser eliminado, quieres continuar?
+ALERT.ORDER.FEEDBACK.ANONYMOUS.TITLE=Producto añadido a la cesta
+ALERT.ORDER.FEEDBACK.ANONYMOUS.PROMPT=Que quieres hacer a continuación?
+ALERT.ORDER.FEEDBACK.ANONYMOUS.BTN.CONTINUE=Crear otro producto
+ALERT.ORDER.FEEDBACK.ANONYMOUS.BTN.GOTOBASKET=Ir a la cesta
+ALERT.ORDER.FEEDBACK.USER.TITLE=Producto añadido a la cesta
+ALERT.ORDER.FEEDBACK.USER.PROMPT=El producto ha sido creado correctamente
+
+#transforms applied over a editable item
+TRANSFORM.TRANSLATE=Mover
+TRANSFORM.ROTATE=Rotar
+TRANSFORM.SCALE=Escalar
+TRANSFORM.REMOVE=Eliminar

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<s:SparkSkin minWidth="21" 
+			 minHeight="21" 
+			 alpha.disabled="0.5"
+			 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:fb="http://ns.adobe.com/flashbuilder/2009"> 
+			 
+    
+	<fx:Metadata>
+		[HostComponent("spark.components.ButtonBarButton")]
+	</fx:Metadata>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.util.ColorUtil;
+			import com.bykoko.vo.xmlmapping.product.Color;
+			
+			import spark.components.ButtonBarButton;
+
+			
+		]]>
+	</fx:Script>
+	
+	<!-- Estados -->
+	<s:states>
+		<s:State name="up"/>
+		<s:State name="over" stateGroups="overStates"/>
+		<s:State name="down" stateGroups="downStates"/>
+		<s:State name="disabled" stateGroups="disabledStates"/>
+		<s:State name="upAndSelected" stateGroups="selectedStates" />
+		<s:State name="overAndSelected" stateGroups="selectedStates" />
+		<s:State name="downAndSelected" stateGroups="selectedStates" />
+		<s:State name="disabledAndSelected" stateGroups="selectedUpStates, disabledStates, selectedStates" />
+	</s:states>
+	
+	<s:filters>
+		<s:DropShadowFilter alpha="0.7"
+							angle="90"
+							blurX="2"
+							blurY="2"
+							quality="2"
+							color="0x333333"
+							distance="1"
+							inner="true"/>
+		<s:DropShadowFilter alpha="1"
+							angle="90"
+							blurX="2"
+							blurY="2"
+							strength="3"
+							quality="2"
+							color="0xffffff"
+							distance="1"
+							inner="false">
+		</s:DropShadowFilter>
+	</s:filters>
+	
+	<s:filters.selectedStates>
+		<s:GlowFilter blurX="4"
+					  blurY="4"
+					  quality="5"
+					  color="0x333333"/>
+	</s:filters.selectedStates>
+	
+	<s:filters.over>
+		<s:GlowFilter blurX="3"
+					  blurY="3"
+					  quality="2"
+					  color="0x333333"/>
+	</s:filters.over>
+	
+	<!-- Gráficos -->
+	<s:Rect id="background"
+			radiusX="7"
+			radiusY="7"
+			width="20" 
+			height="20">
+		<s:stroke>
+			<s:SolidColorStroke alpha="0" 
+								color="0xcccccc"
+								color.selectedStates="0x666666"
+								weight.selectedStates="3"
+								weight="1"
+								caps="square"
+								scaleMode="none"
+								pixelHinting="true"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="{ColorUtil.htmlStringToHexNumber((hostComponent.data as Color).hex)}"/>
+		</s:fill>
+	</s:Rect>
+	
+</s:SparkSkin>

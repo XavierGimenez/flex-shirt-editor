@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer autoDrawBackground="false"
+				xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Metadata>
+		[Event(name="changeSize", type="flash.events.Event")]	
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.vo.xmlmapping.product.Talla;
+			
+			
+			public function get amount():Number
+			{
+				return numericStepper.value;
+			}
+				
+			private function init():void
+			{
+				//non-editable Spark NumericStepper control by setting the Boolean editable 
+				//property on the NumericStepper control’s internal TextInput control.
+				numericStepper.textDisplay.editable = false;
+			}
+			
+			
+		]]>
+	</fx:Script>
+
+	<s:layout>
+		<s:HorizontalLayout verticalAlign="middle"/>
+	</s:layout>
+	
+	<s:Label text="{String((data as Talla).name).toUpperCase()}"
+			 width="25"
+			 textAlign="right"/>
+	<s:NumericStepper id="numericStepper"
+					  value="0"
+					  minimum="0"
+					  maximum="50"
+					  width="45"
+					  change="dispatchEvent(new Event('changeSize', true))"
+					  initialize="init()"/>
+</s:ItemRenderer>

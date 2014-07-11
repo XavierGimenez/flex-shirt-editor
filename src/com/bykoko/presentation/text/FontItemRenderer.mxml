@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer height="20"
+				autoDrawBackground="true"
+				xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" >
+
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.vo.FontDesigner;
+			
+			import flash.text.Font;
+		]]>
+	</fx:Script>
+	
+	<!-- states -->
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="hovered" />
+		<s:State name="selected" />
+		<s:State name="normalAndShowsCaret" />
+		<s:State name="hoveredAndShowsCaret" />
+		<s:State name="selectedAndShowsCaret" />
+	</s:states>
+	
+	<s:layout>
+		<s:HorizontalLayout paddingTop="8"
+							paddingBottom="10"
+							paddingLeft="5"
+							paddingRight="5"
+							verticalAlign="middle"/>
+	</s:layout>
+
+	<s:Label id="labelDisplay"
+			 fontSize="16"
+			 fontFamily="{(data as FontDesigner).fontName}"/>
+</s:ItemRenderer>

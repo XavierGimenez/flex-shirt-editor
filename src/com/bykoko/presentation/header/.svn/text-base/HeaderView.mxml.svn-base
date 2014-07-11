@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup width="100%"
+		  gap="10"
+		  horizontalAlign="left"
+		  xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  xmlns:header="com.bykoko.presentation.header.*"
+		  xmlns:parsley="http://www.spicefactory.org/parsley">
+
+	<fx:Declarations>
+		<header:HeaderViewPM id="model"/>
+		<parsley:Configure targets="{model}"/>
+		<parsley:Configure/>
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import assets.AssetsManager;
+		]]>
+	</fx:Script>
+	
+	<header:MainMenu/>
+	<header:NewDesignButton id="newDesignButton"
+							label="{resourceManager.getString('Bundles', 'MAIN_MENU.NEW_DESIGN')}" 
+							icon="{AssetsManager.buttonNewDesign}"
+							skinClass="com.bykoko.style.skins.ButtonNewDesignSkin"
+							click="{model.resetDesign()}"/>
+</s:HGroup>

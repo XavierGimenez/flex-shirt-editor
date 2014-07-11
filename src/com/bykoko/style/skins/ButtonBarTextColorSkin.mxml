@@ -1,0 +1,42 @@
+<s:Skin alpha.disabled="0.5"
+		xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark">
+
+    <fx:Metadata>
+    <![CDATA[ 
+       /** 
+         * @copy spark.skins.spark.ApplicationSkin#hostComponent
+         */
+        [HostComponent("spark.components.ButtonBar")]
+    ]]>
+    </fx:Metadata> 
+
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="disabled" />
+    </s:states>
+    
+    <fx:Declarations>
+        <!--- 
+            @copy spark.components.ButtonBar#middleButton
+            @default spark.skins.spark.ButtonBarMiddleButtonSkin
+            @see spark.skins.spark.ButtonBarMiddleButtonSkin
+        -->
+        <fx:Component id="middleButton" >
+            <s:ButtonBarButton skinClass="com.bykoko.style.skins.ButtonBarButtonTextColorSkin"
+							   buttonMode="true"
+							   useHandCursor="true"/>
+        </fx:Component>
+
+    </fx:Declarations>
+
+    <!--- @copy spark.components.SkinnableDataContainer#dataGroup -->
+    <s:DataGroup id="dataGroup" 
+				 width="100%" 
+				 height="100%">
+        <s:layout>
+            <s:ButtonBarHorizontalLayout gap="-1"/>
+        </s:layout>
+    </s:DataGroup>
+
+</s:Skin>

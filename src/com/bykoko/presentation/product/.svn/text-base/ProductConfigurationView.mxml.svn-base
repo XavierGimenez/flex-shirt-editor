@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup width="100%"
+		  height="497"
+		  paddingLeft="0"
+		  paddingRight="0"
+		  gap="0"
+		  paddingBottom="3"
+		  xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:parsley="http://www.spicefactory.org/parsley" 
+		  xmlns:browser="com.bykoko.presentation.product.browser.*" 
+		  xmlns:options="com.bykoko.presentation.product.options.*" 
+		  xmlns:designer="com.bykoko.presentation.product.designer.*" 
+		  xmlns:browser1="com.bykoko.presentation.design.browser.*"
+		  xmlns:browser2="com.bykoko.presentation.photo.browser.*"
+		  xmlns:text="com.bykoko.presentation.text.*"
+		  xmlns:teams="com.bykoko.presentation.teams.*">
+	
+	<fx:Declarations>
+		<parsley:Configure/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.domain.AppDomain;
+			import com.bykoko.domain.ViewDomain;
+			import com.bykoko.infrastructure.message.ProductMessage;
+			import com.bykoko.presentation.product.options.ProductOptions;
+			import com.bykoko.util.VOUtil;
+			
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			
+			[Inject]
+			[Bindable]
+			public var appDomain:AppDomain;
+			
+			[Inject]
+			[Bindable]
+			public var viewDomain:ViewDomain;
+			
+			
+			
+			/**************************************************************************************
+			 * MESSAGES
+			 *************************************************************************************/
+			
+			
+			
+			//
+			[MessageHandler]
+			public function handlerProductMessage(productMessage:ProductMessage):void
+			{
+				if(productMessage.type == ProductMessage.PRODUCT_SELECTED)
+				{
+					//a product has been selected, update the display product browser					
+					productDisplaysBrowser.visible = VOUtil.hasProductMultipleDisplays(appDomain.selectedProduct);
+				}
+			}
+
+			
+			
+			/**************************************************************************************
+			 * PRIVATE METHDOS
+			 *************************************************************************************/
+			
+			
+			//
+			protected function creationCompleteHandlerPanelsViewStack(event:FlexEvent):void
+			{
+				//little trick to fire the 'show' event of the first panel selected by default
+				//(all the panels in the view stack initialize their data when their event 'show'
+				//is fired. The first panel selected by default not dispatches this event when
+				//is created, so we do that manually)
+				panelsViewStack.selectedChild.visible = false;
+				panelsViewStack.selectedChild.visible = true;
+				
+				//move the panels to the front of this HGroup. Some panels have view with
+				//hovered states that overlaps the designer area
+				UIComponent(this.getElementAt(0)).depth = 4;
+			}
+		]]>
+	</fx:Script>
+	
+	
+	<!-- view stack for the set of panels -->
+	<mx:ViewStack id="panelsViewStack"
+				  width="271"
+				  height="100%"
+				  creationComplete="creationCompleteHandlerPanelsViewStack(event)"
+				  selectedIndex="{viewDomain.indexPanel}">
+		<browser:ProductsPanel id="productsBrowser"/>
+		<browser1:DesignsBrowser id="designsBrowser"/>
+		<browser2:PhotosBrowser id="photosBrowser"/>
+		<text:TextEditorPanel id="textEditorPanel"/>
+		<teams:TeamsPanel id="teamsPanel"/>
+	</mx:ViewStack>
+
+	
+	<s:VGroup width="471"
+			  height="471">
+		
+		<!-- product views rotation. 
+			Only visible if the product has more than one display
+			Disabled when the section is 'Teams'
+		-->
+		<options:ProductDisplaysBrowser id="productDisplaysBrowser"
+										enabled="{viewDomain.indexPanel != ViewDomain.SECTION_TEAMS}"/>
+		
+		<!-- product designer -->
+		<designer:ProductDesigner/>
+	</s:VGroup>
+	
+	<!--product options, is shown dynamically -->
+	<options:ProductOptions visible="{(appDomain.selectedProduct != null)}"/>
+	
+</s:HGroup>

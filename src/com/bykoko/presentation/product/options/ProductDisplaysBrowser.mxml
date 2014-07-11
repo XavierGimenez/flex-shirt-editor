@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group width="100%"
+		  height="40"
+		  xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:parsley="http://www.spicefactory.org/parsley"
+		  xmlns:common="com.bykoko.presentation.common.*"
+		  xmlns:options="com.bykoko.presentation.product.options.*">
+
+	<fx:Declarations>
+		<options:ProductDisplayBrowserPM id="model"/>
+		<parsley:Configure targets="{model}"/>
+		<parsley:Configure/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.style.skins.ArrowProductDisplayLeftSkin;
+			import com.bykoko.style.skins.ArrowProductDisplayRightSkin;
+		]]>
+	</fx:Script>
+
+	<!-- title label -->
+	<s:Label id="title" 
+			 text="{resourceManager.getString('Bundles', 'PRODUCT_OPTIONS.DISPLAYS_BROWSER.TITLE')}"
+			 styleName="productDisplayBrowserTitle"
+			 x="{displayBrowser.x - title.width - 10}"
+			 verticalCenter="0"/>
+
+	<s:HGroup id="displayBrowser"
+			  verticalCenter="0"
+			  horizontalCenter="-10">
+		<!-- button to look for the previous available product display -->
+		<common:IconButton skinClass="com.bykoko.style.skins.ArrowProductDisplayLeftSkin"
+						   enabled="{(model.appDomain.selectedProduct != null)}"
+						   click="{model.previousProductDisplay()}"/>
+		<s:Rect width="3"
+				height="100%">
+			<s:fill>
+				<s:SolidColor color="#cccccc"/>
+			</s:fill>
+		</s:Rect>
+		
+		<!-- button to look for the next available product display -->
+		<common:IconButton skinClass="com.bykoko.style.skins.ArrowProductDisplayRightSkin"
+						   enabled="{(model.appDomain.selectedProduct != null)}"
+						   click="{model.nextProductDisplay()}"/>
+	</s:HGroup>
+</s:Group>

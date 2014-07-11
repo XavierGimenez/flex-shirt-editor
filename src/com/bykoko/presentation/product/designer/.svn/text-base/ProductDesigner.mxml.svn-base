@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group width="100%"
+		 height="100%"
+		 mouseDown="mouseDownHandler(event)"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:parsley="http://www.spicefactory.org/parsley" 
+		 xmlns:designer="com.bykoko.presentation.product.designer.*" 
+		 xmlns:ui="com.bykoko.presentation.product.designer.ui.*">
+
+	<fx:Declarations>
+		<designer:ProductDesignerPM id="model"
+									addEditables="addEditableItem(event)"
+									productSelected="removeUI(event)"
+									changeProductDisplay="productDisplayChanged(event)"
+									view="{this}"/>
+		<parsley:Configure targets="{model}"/>
+		<parsley:Configure/>
+		<s:Fade id="fadeEffect" 
+				target="{productImage}"
+				alphaFrom="0"
+				alphaTo="1"
+				duration="200"/>
+		<s:Fade id="fadeEffectDesignArea"
+				target="{designAreaHolder}"/>
+		
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.domain.Constants;
+			import com.bykoko.domain.Domain;
+			import com.bykoko.infrastructure.message.IEditableMessage;
+			import com.bykoko.infrastructure.message.ProductMessage;
+			import com.bykoko.infrastructure.message.TaskMessage;
+			import com.bykoko.presentation.common.CircleSlicePreloader;
+			import com.bykoko.presentation.common.MarchingAntsSelectionRectangle;
+			import com.bykoko.presentation.product.designer.event.ProductDesignerEvent;
+			import com.bykoko.util.MathUtil;
+			import com.bykoko.util.SpriteUtil;
+			import com.bykoko.util.SpriteVisualElementUtil;
+			import com.bykoko.util.VOUtil;
+			import com.bykoko.vo.ProductDisplayInfo;
+			import com.bykoko.vo.ProductDisplaySnapshot;
+			
+			import flashx.textLayout.conversion.TextConverter;
+			
+			import mx.collections.ArrayCollection;
+			import mx.graphics.ImageSnapshot;
+			import mx.graphics.codec.PNGEncoder;
+			
+			public var designAreaRectangle:MarchingAntsSelectionRectangle;
+
+			[MessageDispatcher]
+			public var dispatcher:Function;
+			
+			
+			
+			/**************************************************************************************
+			 * PRIVATE METHODS
+			 *************************************************************************************/
+			
+			
+			
+			//Handler for event model
+			private function addEditableItem(event:ProductDesignerEvent):void
+			{
+				//adds one or more items to the current product display
+				for each(var editable:IEditable in event.editables)
+				{
+					//listen to mouse_down event to attach a bounding box to the editableDesign
+					//It has to be the  mouse_down event because the bounding box makes the 
+					//editable design draggable listening the mouse_move/mouse_up events of
+					//the editableDesign. 
+					
+					//Items not able to be modified: 
+					//EditableTextTeams and items of an existing order when the app is being executed
+					//to customize an existing product (a users personalizes an existing product to buy it)
+					if(model.appDomain.isEditableItemUpdatable(editable))
+					{
+						(editable as EditableBase).addEventListener(MouseEvent.MOUSE_DOWN, editableDownHandler);						
+					}
+					
+					designsHolder.addElement(editable as EditableBase);
+					
+					//the first time an item is added to the display list and ready, throws a COMPLETE parsley message
+					//and the item will be scaled to fit into the valid design area, as well as placed randomly
+				}
+				
+				fadeDesignArea(Constants.FADE_IN);
+			}
+
+			
+
+			//
+			private function productDisplayChanged(event:ProductDesignerEvent):void
+			{
+				removeUI();
+				addEditableItem(event);
+			}
+			
+			
+			
+			//
+			private function removeUI(event:Event = null):void
+			{
+				//remove the designs
+				while(designsHolder.numElements > 0)
+				{
+					if(designsHolder.getElementAt(0) is EditableBase)
+					{
+						(designsHolder.getElementAt(0) as EditableBase).removeEventListener(MouseEvent.MOUSE_DOWN, editableDownHandler);
+						
+						//the remove() function saves the position of the item (for the SVG), before it's removed. Reason is that
+						//when sending and order, that are not in the displayList (items that are in product displays not
+						//being shown), we can not get its position (getBounds can not be applied)
+						(designsHolder.getElementAt(0) as EditableBase).remove();
+					}
+					else
+					{
+						designsHolder.removeElementAt(0);
+					}
+				}
+			}
+			
+			
+			
+			//removes the elements added when creating snapshots
+			private function removeUIWithoutPositionUpdates():void
+			{
+				//remove the designs
+				while(designsHolder.numElements > 0)
+				{
+					designsHolder.removeElementAt(0);
+				}
+			}
+			
+			
+			
+			//Returns the area where the user can edit. The rectangle is scaled with the same
+			//scale applied to the image, so the ratio image:area remains proportional
+			protected function getDesignAreaRectangle(forceProductDisplay:String = ''):Rectangle
+			{
+				var productDisplay:String = (forceProductDisplay != '')? forceProductDisplay:model.appDomain.currentProductDisplay;
+				var rect:Rectangle = VOUtil.getRectangleFromPosition(model.appDomain.selectedProduct.posiciones[productDisplay]);
+				
+				//the image is scaled to fit the available space, so the design area has to be scaled too
+				var scale:Number = productImage.maxWidth / productImage.contentWidth;
+				rect.x *= scale;
+				rect.y *= scale;
+				rect.width *= scale;
+				rect.height *= scale;
+				return rect;
+			}
+			
+			
+			
+			//
+			protected function fadeDesignArea(type:int):void
+			{
+				fadeEffectDesignArea.alphaFrom = designAreaHolder.alpha;
+				fadeEffectDesignArea.alphaTo = (type == Constants.FADE_IN)?	Constants.ALPHA_DESIGN_AREA:0;
+				fadeEffectDesignArea.play();
+			}
+
+			
+			
+			protected function updateItemsInProductDisplays():void
+			{
+				//delete first those items that can not exists anymore (its product display does no exist)
+				var productDisplaysInfo:ArrayCollection = VOUtil.getProductDisplaysInfo(model.appDomain.selectedProduct, model.appDomain.selectedColorProduct);
+				var productDisplayId:String;
+				productDisplaysInfo.filterFunction = function(productDisplayInfo:ProductDisplayInfo):Boolean
+				{
+					return (productDisplayInfo.id == productDisplayId);
+				}
+				
+				for each(productDisplayId in VOUtil.PRODUCT_DISPLAYS)
+				{
+					productDisplaysInfo.refresh();
+					if(productDisplaysInfo.length == 0)
+					{
+						//the specified productDisplayId does not exist for the product,
+						//delete items in the domain that could be in that product display
+						model.appDomain.removeEditableDesignsForProductDisplay(productDisplayId);
+					}
+				}
+				productDisplaysInfo.filterFunction = null;
+				productDisplaysInfo.refresh();
+				
+				for each(var productDisplayInfo:ProductDisplayInfo in productDisplaysInfo)
+				{
+					//get the design area of the product display, so we can calculate items outside the design areas
+					designAreaRectangle = new MarchingAntsSelectionRectangle();
+					designAreaRectangle.rect = getDesignAreaRectangle(productDisplayInfo.id);
+					
+					var iEditables:ArrayCollection = model.appDomain.getEditableDesignsForProductDisplay(productDisplayInfo.id);
+					if(iEditables.length > 0)
+					{
+						for each(var editable:IEditable in iEditables)
+						{
+							designsHolder.addElement(editable as EditableBase);
+							model.appDomain.editableItem = editable;
+							model.checkEditableItemPartiallyOutside();
+						}
+						
+						removeUI();
+					}
+				}
+				
+				//all the items have been checked. Restore some values
+				model.appDomain.editableItem = null;
+				
+				//set the design area for the front product display
+				designAreaRectangle = new MarchingAntsSelectionRectangle();
+				designAreaRectangle.rect = getDesignAreaRectangle();
+				designAreaHolder.addChild(designAreaRectangle);
+				
+				//place items for the front product display
+				addEditableItem(new ProductDesignerEvent(ProductDesignerEvent.CHANGE_PRODUCT_DISPLAY, model.appDomain.editableDesigns));
+				
+				//check if there are items outside the design area
+				if(!model.appDomain.productDesignIsRight)
+				{
+					Domain.showAlertWindowBeforeResumeMessage(resourceManager.getString('Bundles','ALERT.TITLE.WARNING'),
+						resourceManager.getString('Bundles','ALERT.DESIGN_NOT_VALID'));
+				}
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * MESSAGES
+			 *************************************************************************************/
+			
+			
+			
+			//
+			[MessageHandler]
+			public function handleProductMessage(productMessage:ProductMessage):void
+			{
+				switch(productMessage.type)
+				{
+					case ProductMessage.REMOVE_DESIGN:
+						//remove the design from the model, the displayList and the context
+						model.appDomain.editableItem = model.removeIEditable();
+						(model.appDomain.editableItem as EditableBase).removeEventListener(MouseEvent.MOUSE_DOWN, editableDownHandler);
+						(model.appDomain.editableItem as EditableBase).remove();
+
+						//remove bounding box
+						designsHolder.removeElement(model.boundingBox);
+						model.boundingBox = null;
+						dispatcher(new ProductMessage(ProductMessage.UPDATE_PRICE));
+						break;
+					
+					case ProductMessage.REMOVE_ALL_DESIGNS:
+						removeUI();
+						model.removeAllDesigns();
+						dispatcher(new ProductMessage(ProductMessage.UPDATE_PRICE));
+						break;
+					
+					case ProductMessage.INSERT_EDITABLE_ITEM:
+						var editableText:EditableText = new EditableText(Constants.NO_ID, new SpriteVisualElement());
+						editableText.textFlow = TextConverter.importToFlow(productMessage.editableItem.tlf, TextConverter.TEXT_LAYOUT_FORMAT);
+						editableText.content.x = designAreaRectangle.rect.left + productMessage.editableItem.x;
+						editableText.content.y = designAreaRectangle.rect.top + productMessage.editableItem.y;
+						model.appDomain.addEditableDesign(editableText);
+						designsHolder.addElement(editableText);
+						break;
+				}
+			}
+
+
+			
+			//Everytime an editable design item is added and setup, it is scaled/moved/rotated depending
+			//on its type (design, text, image, team text, ...)
+			[MessageHandler]
+			public function editableCompleteHandler(event:IEditableMessage):void
+			{
+				//if the item belongs to an order, do nothing with it
+				if(model.appDomain.editableItemsFromExistingOrder.indexOf(event.target) != -1)
+				{
+					return;
+				}
+				
+				//save into the editableItem the holder of the design area, as the editableItem needs
+				//it to estimate its position relative to the design area
+				(event.target as EditableBase).referenceHolder = designAreaHolder;
+				
+				//for images and designs, scale them to the limits of the area and then scale them 50%
+				if(!(event.target is EditableTextBase))
+				{
+					SpriteVisualElementUtil.matchSize((event.target as EditableBase).content, designAreaRectangle, true);
+					(event.target as EditableBase).content.scaleX *= 0.5;
+					(event.target as EditableBase).content.scaleY *= 0.5;
+					
+					//scale also the bounds of the asset
+					(event.target as EditableBase).assetBounds.width *= (event.target as EditableBase).content.scaleX;
+					(event.target as EditableBase).assetBounds.height *= (event.target as EditableBase).content.scaleY;
+				}
+				
+				//positionate the editable item
+				if(event.target is EditableTextTeam)
+				{
+					//placing the text in the left side will make it appear centered, as the text width is all
+					//the available width area and the text is aligned as centered
+					(event.target as EditableBase).content.x = designAreaRectangle.rect.left + designAreaRectangle.rect.width/2;
+					(event.target as EditableBase).content.y = designAreaRectangle.rect.top + 15 + (event.target as EditableBase).assetBounds.height/2;
+				}
+				else					
+				{
+					//the rest of items are placed in a random position within the area
+					var randomX:int = MathUtil.randInteger(designAreaRectangle.rect.left + (event.target as EditableBase).assetBounds.width/2, designAreaRectangle.rect.right - (event.target as EditableBase).assetBounds.width/2);
+					var randomY:int = MathUtil.randInteger(designAreaRectangle.rect.top + (event.target as EditableBase).assetBounds.height/2, designAreaRectangle.rect.bottom - (event.target as EditableBase).assetBounds.height/2); 
+					(event.target as EditableBase).content.x = randomX;
+					(event.target as EditableBase).content.y = randomY;
+					
+					//auto select the inserted item. Setting the 2nd parameter to false indicates
+					//that the bounding box will not be draggable (it will if the user clicks on it)
+					if(event.target == model.appDomain.editableItem)
+					{
+						model.selectEditableItem(model.appDomain.editableItem, false);
+						
+						//if the inserted new item is a text, select it and set focus over it
+						if(model.appDomain.editableItem is EditableText)
+						{
+							(model.appDomain.editableItem as EditableText).selectAll();
+						}
+					}
+				}
+			}
+			
+			
+			
+			[MessageHandler(selector="createProductSnapshotsRequest")]
+			public function handleCreateProductSnapshotsTask(task:TaskMessage):void
+			{	
+				var editable:IEditable;
+				var imageSnapShot:ImageSnapshot;
+				
+				model.deselectEditableItem();
+				removeUIWithoutPositionUpdates();
+				
+				//clear previous old snapshots
+				model.appDomain.productDisplaysSnapshots = new Vector.<ProductDisplaySnapshot>();
+				
+				if(model.viewDomain.isTeamsView)
+				{
+					//when using the section "Team", each text element is part of a different product, so each text is an snapshot
+					for each(editable in model.appDomain.getEditableDesignsForProductDisplay(VOUtil.POSITION_BACK))
+					{
+						//editable text Teams are hidden/shown, so rememeber to set visible=true always
+						(editable as EditableBase).visible = true;
+						designsHolder.addElement(editable as EditableBase);
+						imageSnapShot = ImageSnapshot.captureImage(designsHolder, 0, new PNGEncoder());
+						model.appDomain.productDisplaysSnapshots.push( new ProductDisplaySnapshot(VOUtil.POSITION_BACK, ImageSnapshot.encodeImageAsBase64(imageSnapShot)));
+						
+						removeUIWithoutPositionUpdates();
+					}
+				}
+				else
+				{	
+					//create snapshots for all those available product displays that have designs on it.
+					//only the designs are included, not the
+					for each(var productDisplayInfo:ProductDisplayInfo in VOUtil.getProductDisplaysInfo(model.appDomain.selectedProduct, model.appDomain.selectedColorProduct))
+					{
+						var iEditables:ArrayCollection = model.appDomain.getEditableDesignsForProductDisplay(productDisplayInfo.id);
+						
+						if(iEditables.length > 0)
+						{
+							for each(editable in iEditables)
+							{
+								designsHolder.addElement(editable as EditableBase);
+							}
+							
+							imageSnapShot = ImageSnapshot.captureImage(designsHolder, 0, new PNGEncoder());
+							model.appDomain.productDisplaysSnapshots.push( new ProductDisplaySnapshot(productDisplayInfo.id, ImageSnapshot.encodeImageAsBase64(imageSnapShot)));
+							
+							removeUIWithoutPositionUpdates();
+						}
+					}
+	
+					//restore the previous product display
+					productDisplayChanged(new ProductDesignerEvent(ProductDesignerEvent.CHANGE_PRODUCT_DISPLAY, model.appDomain.editableDesigns));
+				}
+				
+				//notify that the task of taking snapshots is completed
+				dispatcher( new TaskMessage(TaskMessage.CREATE_PRODUCT_SNAPSHOTS_RESPONSE));
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * EVENTS
+			 *************************************************************************************/
+			
+			
+			
+			//unselect a possible selected item and fade off the valid area
+			protected function mouseDownHandler(event:Event):void
+			{
+				if(model.boundingBox)
+					model.deselectEditableItem();
+				
+				fadeDesignArea(Constants.FADE_OUT);
+			}
+			
+			
+			
+			//
+			protected function editableDownHandler(event:Event):void
+			{
+				//stop the event so this view does not receives it so no deselection is done
+				event.stopImmediatePropagation();
+				
+				//move the editable item to the front of the displayList
+				designsHolder.setElementIndex(event.currentTarget as EditableBase, designsHolder.numElements - 1);
+				
+				//select the editable item. As we are selecting it because of a MouseEvent.MOUSE_DOWN
+				//the bounding box will add listeners for the MOUSE_MOVE and MOUSE_UP mouseEvents.
+				//When the selection is done programatically, these listeners are not added
+				model.selectEditableItem(event.currentTarget as IEditable, true);
+
+				fadeDesignArea(Constants.FADE_IN);
+			}
+			
+			
+			
+			//
+			private function productImageCompleteHandler(event:Event):void
+			{
+				//remove the image preloader
+				SpriteUtil.removeChildren(preloaderHolder);
+				
+				//draw rectangle with the valid area where user can design within
+				designAreaRectangle = new MarchingAntsSelectionRectangle();
+				designAreaRectangle.rect = getDesignAreaRectangle();
+				designAreaHolder.addChild(designAreaRectangle);
+				
+				//check if the loaded product is part of the bootstrap process
+				if(model.appDomain.bootstrapTaskGroup)
+				{
+					//notify that this bootstraping task has been finished
+					dispatcher(new TaskMessage(TaskMessage.LOAD_PRODUCT_RESPONSE));
+				}
+				else if(model.dirtyEditableItems)
+				{
+					//the product has changed. Check if the existing items still can exist
+					//in the displays of the new product
+					updateItemsInProductDisplays();
+					
+					//update the price with the remaining items
+					dispatcher(new ProductMessage(ProductMessage.UPDATE_PRICE));
+					
+					//no items need to be validated until the product changes again
+					model.dirtyEditableItems = false;
+				}
+			}
+
+			
+			
+			//
+			protected function productImageOpenHandler(event:Event):void
+			{
+				//remove the rectangle valid area
+				SpriteUtil.removeChildren(designAreaHolder);
+				
+				SpriteUtil.removeChildren(preloaderHolder);
+				preloaderHolder.addChild(new CircleSlicePreloader()) as CircleSlicePreloader;
+			}
+
+		]]>
+	</fx:Script>
+
+	<mx:Image id="productImage"
+			  x="0"
+			  y="0"
+			  source='{model.appDomain.selectedColorProduct.path + model.appDomain.currentProductDisplay + "/" + model.appDomain.selectedColorProduct.getImageFileByDisplay(model.appDomain.currentProductDisplay)}'
+			  maxWidth="{this.width}"
+			  smoothBitmapContent="true"
+			  open="productImageOpenHandler(event)"
+			  complete="productImageCompleteHandler(event)"
+			  completeEffect="{fadeEffect}"/>
+	
+	<!-- image preloader -->
+	<s:SpriteVisualElement id="preloaderHolder"
+						   x="{this.width/2 - 8}"
+						   y="{this.height/2 - 8}"/>
+	
+	<!-- valid area of product design -->
+	<s:SpriteVisualElement id="designAreaHolder"
+						   x="0"
+						   y="0"
+						   width="100%"
+						   height="100%"
+						   alpha="{Constants.ALPHA_DESIGN_AREA}"/>
+	
+	<!-- holder where the designs are dropped -->
+	<s:Group id="designsHolder"
+			 width="100%"
+			 height="100%"/>	
+</s:Group>

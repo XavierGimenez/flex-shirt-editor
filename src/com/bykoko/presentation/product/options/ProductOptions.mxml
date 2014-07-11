@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup width="100%"
+		  height="100%"
+		  gap="25"
+		  verticalAlign="bottom"
+		  xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:parsley="http://www.spicefactory.org/parsley"
+		  xmlns:common="com.bykoko.presentation.common.*" 
+		  xmlns:options="com.bykoko.presentation.product.options.*">
+
+	<fx:Declarations>
+		<options:ProductOptionsPM id="model"/>
+		<parsley:Configure targets="{model}"/>
+		<parsley:Configure/>
+		<mx:CurrencyFormatter id="currencyFormatter"
+							  alignSymbol="right"
+							  currencySymbol="{resourceManager.getString('FormatValues', 'CURRENCY_SYMBOL')}"
+							  thousandsSeparatorTo="{resourceManager.getString('FormatValues', 'THOUSANDS_SEPARATOR')}"
+							  decimalSeparatorTo="{resourceManager.getString('FormatValues', 'DECIMAL_SEPARATOR')}"
+							  precision="2"/> 
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import com.bykoko.domain.Constants;
+			import com.bykoko.domain.ViewDomain;
+			import com.bykoko.infrastructure.message.ProductMessage;
+			import com.bykoko.util.VOUtil;
+			import com.bykoko.vo.ProductDisplayInfo;
+			import com.bykoko.vo.xmlmapping.product.Color;
+			import com.bykoko.vo.xmlmapping.product.Talla;
+			
+			import mx.collections.ArrayCollection;
+			
+			[Inject]
+			[Bindable]
+			public var viewDomain:ViewDomain;
+			
+			
+			
+			/**************************************************************************************
+			 * PRIVATE METHODS
+			 *************************************************************************************/
+			
+			
+			
+			private function reset():void
+			{
+				productDisplays.dataProvider = null;
+				productDisplays.validateNow();
+				productDisplays.dataProvider = VOUtil.getProductDisplaysInfo(model.appDomain.selectedProduct, model.appDomain.selectedColorProduct);
+				
+				productColors.dataProvider = new ArrayCollection(model.appDomain.selectedProduct.colores.colores);
+				productSizes.dataProvider = new ArrayCollection(model.appDomain.selectedColorProduct.tallas.tallas);
+				productMultiSizes.model.generateViewData();
+				
+				for(var i:int = 0; i < productDisplays.dataProvider.length; i++)
+				{
+					if((productDisplays.dataProvider.getItemAt(i) as ProductDisplayInfo).id == model.appDomain.currentProductDisplay)
+						productDisplays.selectedIndex = i;
+				}
+				productColors.selectedIndex = productSizes.selectedIndex = 0;
+				model.appDomain.quantityProduct = 1;
+				getPrice();
+			}
+			
+			
+			
+			private function updateSelectedProductDisplay():void
+			{
+				for(var i:int = 0; i < productDisplays.dataProvider.length; i++)
+				{
+					if((productDisplays.dataProvider.getItemAt(i) as ProductDisplayInfo).id == model.appDomain.currentProductDisplay)
+					{
+						productDisplays.selectedIndex = i;
+						break;
+					}
+				}
+			}
+
+			
+			
+			//
+			private function getPrice():void 
+			{
+				price.text = currencyFormatter.format(model.appDomain.getPrice(Constants.TAX_WITH));
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * MESSAGES
+			 *************************************************************************************/
+			
+			
+			
+			//
+			[MessageHandler]
+			public function handlerProductMessage(productMessage:ProductMessage):void
+			{
+				switch(productMessage.type)
+				{
+					case ProductMessage.PRODUCT_SELECTED:
+						//reset dataproviders and set this view with default values
+						reset();
+						break;
+					
+					case ProductMessage.CHANGE_PRODUCT_DISPLAY:
+						//update the selected item of the product displays
+						updateSelectedProductDisplay();
+						break;
+					
+					case ProductMessage.CHANGE_PRODUCT_COLOR:
+						productColors.selectedItem = model.appDomain.selectedColorProduct;
+						productColors.validateNow();
+						
+						//each color has its own available sizes, so update:
+						// 1) data provider/selected index for the sizes list
+						// 2) the populated references in the multisize list(its PM will do that)
+						productSizes.dataProvider = new ArrayCollection(model.appDomain.selectedColorProduct.tallas.tallas);
+						productSizes.selectedIndex = 0;
+						model.changeProductSize(productSizes.dataProvider.getItemAt(0) as Talla);
+						productMultiSizes.model.generateViewData();
+						
+						productDisplays.dataProvider = null;
+						productDisplays.validateNow();
+						productDisplays.dataProvider = VOUtil.getProductDisplaysInfo(model.appDomain.selectedProduct, model.appDomain.selectedColorProduct);
+						break;
+
+					case ProductMessage.CHANGE_PRODUCT_SIZE:
+						productSizes.selectedItem = model.appDomain.selectedSizeProduct;
+						productSizes.validateNow();
+						break;
+					
+					case ProductMessage.INSERT_TEXT_TEAM:
+					case ProductMessage.REMOVE_TEXT_TEAM:
+					case ProductMessage.UPDATE_PRICE:
+						getPrice();
+						break;
+				}
+			}
+			
+			
+			
+			/**************************************************************************************
+			 * EVENTS
+			 *************************************************************************************/
+			
+			
+			
+			//For ui configurations with a single size to choose, just send the order.
+			//For ui configurations with multi-size selections, check the form before send the data
+			protected function handlerAddToCartClick():void
+			{
+				//send request to execute the task of creating product snapshots
+				model.sendData();
+			}
+
+		]]>
+	</fx:Script>
+	
+
+	
+	<s:Group width="100%"
+			 visible="{(model.appDomain.profile == Constants.PROFILE_ANONYMOUS || model.appDomain.profile != Constants.PROFILE_EXTERNAL_PROVIDER) &amp;&amp; model.appDomain.config.modulo_multitallas == Constants.HIDE}">
+		<!-- numeric stepper to choose the quantity of items to buy. 
+			Visibility depends on the UI configuration and if the app is reproducing an existing order -->
+		<s:HGroup width="100%">
+			<s:Label text="{resourceManager.getString('Bundles', 'PRODUCT_OPTIONS.AMOUNT')}"
+					 paddingTop="5"
+					 styleName="productAmount"/>
+			<s:NumericStepper id="productAmount"
+							  minimum="1"
+							  maximum="{model.appDomain.config.limit_art}"
+							  value="@{model.appDomain.quantityProduct}"
+							  enabled="{viewDomain.indexPanel != ViewDomain.SECTION_TEAMS}"
+							  change="{getPrice()}"/>
+		</s:HGroup>
+		
+	</s:Group>
+		
+	
+	
+	<!-- available product displays of the selected product -->
+	<s:ButtonBar id="productDisplays"
+				 width="100%"
+				 requireSelection="true"
+				 skinClass="com.bykoko.style.skins.ButtonBarProductDisplaySkin"
+				 enabled="{viewDomain.indexPanel != ViewDomain.SECTION_TEAMS}"
+				 change="{model.changeProductDisplay(productDisplays.selectedItem as ProductDisplayInfo)}">
+		<s:layout>
+			<s:HorizontalLayout gap="7"
+								horizontalAlign="left"/>
+		</s:layout>
+	</s:ButtonBar>
+	
+	
+	
+	<!-- available selected product's colors -->
+	<s:ButtonBar id="productColors"
+				 width="100%"
+				 requireSelection="true"
+				 skinClass="com.bykoko.style.skins.ButtonBarProductColorSkin"
+				 change="{model.changeProductColor(productColors.selectedItem as Color)}">
+		<s:layout>
+			<s:TileLayout requestedColumnCount="8"/>
+		</s:layout>
+	</s:ButtonBar>
+	
+	
+	
+	<!-- Available sizes of the selected product 
+		Visibility depends on the UI configuration and the profile of the app
+	-->
+	
+	<s:Group width="100%">		
+		<s:ButtonBar id="productSizes"
+					 width="100%"
+					 requireSelection="true"
+					 skinClass="com.bykoko.style.skins.ButtonBarProductSizeSkin"
+					 enabled="{viewDomain.indexPanel != ViewDomain.SECTION_TEAMS}"					 
+					 visible="{(model.appDomain.profile == Constants.PROFILE_ANONYMOUS || model.appDomain.profile != Constants.PROFILE_EXTERNAL_PROVIDER) &amp;&amp; model.appDomain.config.modulo_multitallas == Constants.HIDE}"
+					 includeInLayout="{(model.appDomain.profile == Constants.PROFILE_ANONYMOUS || model.appDomain.profile != Constants.PROFILE_EXTERNAL_PROVIDER) &amp;&amp; model.appDomain.config.modulo_multitallas == Constants.HIDE}"
+					 change="{model.changeProductSize(productSizes.selectedItem as Talla)}">
+			<s:layout>
+				<s:TileLayout requestedColumnCount="6"/>
+			</s:layout>
+		</s:ButtonBar>
+		
+	
+		
+		<!-- multi size chooser for the selected product
+			Visibility depends on the UI configuration -->
+		<options:MultiSizeChooser id="productMultiSizes"
+								  enabled="{viewDomain.indexPanel != ViewDomain.SECTION_TEAMS}"
+								  visible="{model.appDomain.profile != Constants.PROFILE_USER_WITH_DESIGN &amp;&amp; model.appDomain.profile != Constants.PROFILE_PRODUCT_MODIFIED_BY_OWNER &amp;&amp; model.appDomain.profile != Constants.PROFILE_USER_CORNER &amp;&amp; model.appDomain.profile != Constants.PROFILE_EXTERNAL_PROVIDER &amp;&amp; model.appDomain.config.modulo_multitallas == Constants.SHOW}"
+								  includeInLayout="{model.appDomain.profile != Constants.PROFILE_USER_WITH_DESIGN &amp;&amp; model.appDomain.profile != Constants.PROFILE_PRODUCT_MODIFIED_BY_OWNER &amp;&amp; model.appDomain.profile != Constants.PROFILE_USER_CORNER &amp;&amp; model.appDomain.profile != Constants.PROFILE_EXTERNAL_PROVIDER  &amp;&amp; model.appDomain.config.modulo_multitallas == Constants.SHOW}"/>
+	</s:Group>
+	
+	
+	
+	<!-- Price and add to cart button
+		This layout changes based on the UI configuration of the designer
+	-->
+	<s:Group id="buyGroup"
+			 width="100%">
+		<s:Label id="price"
+				 minWidth="120"
+				 left="0"
+				 top="13"
+				 styleName="price"
+				 visible="{model.appDomain.config.show_price == Constants.SHOW}">
+			<s:filters>
+				<s:DropShadowFilter angle="90"
+									blurX="2"
+									blurY="2"
+									color="0xffffff"
+									distance="1"
+									quality="3"/>
+				<s:DropShadowFilter angle="45"
+									blurX="2"
+									blurY="2"
+									color="0x5D676A"
+									distance="2"
+									inner="true"
+									quality="3"/>
+			</s:filters>
+		</s:Label>
+		
+		<s:Button id="addToCartButton"
+				  width="140"
+				  height="35"
+				  top="0"
+				  useHandCursor="true"
+				  buttonMode="true"
+				  enabled="{model.enableOrder}"
+				  right="{(model.appDomain.config.show_price == Constants.SHOW)?	10:buyGroup.width - addToCartButton.width}"
+				  styleName="priceButton"
+				  label="{resourceManager.getString('Bundles', 'BUTTON.ADD_TO_CART')}" 
+				  skinClass="com.bykoko.style.skins.ButtonAddCartSkin"
+				  click="{handlerAddToCartClick()}"/>
+	</s:Group>
+	
+</s:VGroup>
